@@ -1,0 +1,208 @@
+#!/usr/bin/python
+
+import os
+import yaml
+import json
+import requests
+import ipaddress
+from hashlib import sha1
+from sys import hexversion
+from time import time
+#from copy import deepcopy
+
+import hmac
+import six
+
+from flask import request
+from flask import Flask
+
+from flask_restful import Resource
+from flask_restful import Api
+
+#app = Flask(__name__)
+#app.config.from_object('config.DevelopmentConfig')
+
+app = Flask(__name__)
+api = Api(app)
+
+class FastestDockerCI(Resource):
+
+    def __init__(self):
+  
+        self.events = [ "push", "pull_request" ]
+
+    def _get_github_ipblocks(self):
+
+        try:
+            hooks = requests.get('https://api.github.com/meta').json()["hooks"]
+        except:
+            msg = "{}".format(requests.get('https://api.github.com/meta').json())
+            print msg
+
+        return hooks
+
+    def _check_src_ip(self):
+
+        ipblocks = self._get_github_ipblocks(name="github")
+
+        if len(request.access_route) > 1:
+            remote_ip = request.access_route[-1]
+        else:
+            remote_ip = request.access_route[0]
+
+        request_ip = ipaddress.ip_address(u'{0}'.format(remote_ip))
+
+        #results = {}
+
+        # Check if the POST request is from github.com or GHE
+        for block in ipblocks:
+            if ipaddress.ip_address(request_ip) in ipaddress.ip_network(block):
+                print "request_ip = {} is in the list of acceptable ipaddresses".format(request_ip)
+                return True
+
+                #results["status"] = True
+                #results["request_ip"] = request_ip
+                #return results
+
+        msg = "{} is not in list of accepted src ipaddresses".format(request_ip)
+        #results["status"] = False
+        #results["msg"] = msg
+        #return results
+        return msg
+
+    def _chk_event(self):
+
+        event = request.headers.get('X-GitHub-Event')
+        if event == "ping": return "event is ping - nothing done"
+        if event in self.events: return True
+        msg = 'event = "{}" must be {}'.format(event,self.events)
+        print msg
+
+    def _get_payload_fields(self,**kwargs):
+
+        payload = json.load(request.data)
+  
+        event_type = request.headers.get('X-GitHub-Event')
+  
+        results = {}
+  
+        if event_type == "push":
+            commit_hash = payload["head_commit"]["id"]
+            results["message"] = payload["head_commit"]["message"]
+            results["author"] = payload["head_commit"]["author"]["name"]
+            results["authored_date"] = payload["head_commit"]["timestamp"]
+            results["committer"] = payload["head_commit"]["committer"]["name"]
+            results["committed_date"] = payload["head_commit"]["timestamp"]
+            results["url"] = payload["head_commit"]["url"]
+            results["repo_url"] = payload["repository"]["html_url"]
+  
+            # More fields
+            results["compare"] = payload["compare"]
+            results["email"] = payload["head_commit"]["author"]["email"]
+            results["branch"] = payload["ref"].split("refs/heads/")[1]
+  
+        if event_type == "pull_request":
+            commit_hash = payload["pull_request"]["head"]["sha"]
+            results["message"] = payload["pull_request"]["body"]
+            results["author"] = payload["pull_request"]["user"]["login"]
+            results["url"] = payload["pull_request"]["user"]["url"]
+            results["created_at"] = payload["pull_request"]["created_at"]
+            results["authored_date"] = payload["pull_request"]["created_at"]
+            results["committer"] = None
+            results["committed_date"] = None
+            results["updated_at"] = payload["pull_request"]["updated_at"]
+  
+        results["event_type"] = event_type
+  
+        if event_type == "pull_request" or event_type == "push":
+            results["commit_hash"] = commit_hash
+            results["status"] = True
+
+            return results
+  
+        msg = "event_type = {} not allowed".format(event_type)
+        results = {"status":False}
+        results["msg"] = msg
+
+        return results
+
+    def _check_secret(self):
+  
+        secret = os.environ["TRIGGER_SECRET"]
+        header_signature = request.headers.get('X-Hub-Signature')
+  
+        if secret is not None and not isinstance(secret,six.binary_type):
+            secret = secret.encode('utf-8')
+  
+        if header_signature is None:
+            msg = "header_signature is null"
+            return msg
+  
+        sha_name, signature = header_signature.split('=')
+        if sha_name != 'sha1':
+            msg = "sha_name needs to be sha1"
+            return msg
+  
+        # HMAC requires the key to be bytes, but data is string
+        mac = hmac.new(secret, msg=request.data, digestmod=sha1)
+  
+        # Python prior to 2.7.7 does not have hmac.compare_digest
+        if hexversion >= 0x020707F0:
+            if not hmac.compare_digest(str(mac.hexdigest()), str(signature)):
+                msg = "Digest does not match signature"
+                return msg
+        else:
+            if not str(mac.hexdigest()) == str(signature):
+                msg = "Digest does not match signature"
+                return msg
+  
+        print "Secret/signature matches what is expected"
+  
+        return True
+
+    def _check_trigger_id(self,**kwargs):
+
+        trigger_id = kwargs["trigger_id"]
+
+        if str(trigger_id) != os.environ["TRIGGER_ID"]: 
+            return "trigger id doesn't match"
+
+        return True
+
+    def _check_trigger_branch(self,**kwargs):
+
+        branch = kwargs.get("branch")
+        trigger_branch = os.environ["TRIGGER_BRANCH"]
+
+        if str(branch) == str(trigger_branch): return True
+
+        msg = "Trigger branch {} does not match branch to test and build on"
+        return msg
+
+    def post(self,**kwargs):
+
+        # Check ipaddress
+        msg = self._check_src_ip()
+        if msg is not True: return {"msg":msg}
+
+        msg = self._check_trigger_id(**kwargs)
+        if msg is not True: return {"msg":msg}
+
+        msg = self._check_secret(**kwargs)
+        if msg is not True: return {"msg":msg}
+
+        payload = self._get_payload_fields()
+        if payload.get("status") is False: return payload
+     
+        msg = self._check_trigger_branch(**payload)
+        if msg is not True: return {"msg":msg}
+
+        filepath = (int(time()))
+
+        with open(filepath, 'w') as yaml_file:
+            yaml_file.write(yaml.safe_dump(payload,default_flow_style=False))
+
+api.add_resource(FastestDockerCI, '/<string:trigger_id>')
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0',port=8021,debug=True)
