@@ -20,5 +20,7 @@
 #gunicorn -w $THREADS -t 900 -b :8021 run:app
 
 #source venv/bin/activate
+export APP_HOME=/opt/api
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${APP_HOME}/bin:${APP_HOME}/sbin
 
 exec gunicorn -b :8021 --access-logfile - --error-logfile - run:app
