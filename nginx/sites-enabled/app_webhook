@@ -9,7 +9,6 @@ server {
     ssl on;
     ssl_certificate     /etc/ssl/certs/nginx.crt
     ssl_certificate_key /etc/ssl/private/nginx.key
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
     location / {
         proxy_pass http://api:8021;
