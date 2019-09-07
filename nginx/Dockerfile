@@ -15,7 +15,8 @@ ADD sites-enabled/ /etc/nginx/sites-enabled/
 RUN mkdir -p /etc/ssl/certs && mkdir -p /etc/ssl/private
 RUN rm -rf /etc/nginx/nginx.conf
 
-RUN openssl req -newkey rsa:2048 -new -x509 -subj "/C=US/ST=California/L=SanFrancisco/O=Dis/CN=www.selfsigned.com" -days 1024 -nodes -out /etc/ssl/certs/nginx.crt -keyout /etc/ssl/private/nginx.key 
+#RUN openssl req -newkey rsa:2048 -new -x509 -subj "/C=US/ST=California/L=SanFrancisco/O=Dis/CN=www.selfsigned.com" -days 1024 -nodes -out /etc/ssl/certs/nginx.crt -keyout /etc/ssl/private/nginx.key 
+RUN openssl req -newkey rsa:2048 -new -x509 -days 1024 -nodes -out /etc/ssl/certs/nginx.crt -keyout /etc/ssl/private/nginx.key 
 
 ADD nginx.conf /etc/nginx/nginx.conf
 
