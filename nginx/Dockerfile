@@ -1,11 +1,4 @@
-#FROM gear2000/nginx as build
-#FROM ubuntu as build
-#FROM ubuntu/16:04 as build
-#MAINTAINER Gary Leong <gwleong@gmail.com>
-
-#RUN apt-get update && apt-get install openssl -y
-
-FROM alpine:latest as build
+FROM alpine:3:10 as build
 
 # Install OpenSSL
 RUN apk update && \
