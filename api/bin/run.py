@@ -30,6 +30,10 @@ class FastestDockerCI(Resource):
     def __init__(self):
   
         self.events = [ "push", "pull_request" ]
+        self.build_queue_dir = os.environ.get("FASTEST_CI_QUEUE_DIR","/var/tmp/docker/fastest-ci/queue")
+        self.trigger_id = os.environ["TRIGGER_ID"]
+        self.trigger_branch = os.environ["TRIGGER_BRANCH"]
+        self.secret = os.environ["TRIGGER_SECRET"]
 
     def _get_github_ipblocks(self):
 
@@ -128,11 +132,10 @@ class FastestDockerCI(Resource):
 
     def _check_secret(self):
   
-        secret = os.environ["TRIGGER_SECRET"]
         header_signature = request.headers.get('X-Hub-Signature')
   
-        if secret is not None and not isinstance(secret,six.binary_type):
-            secret = secret.encode('utf-8')
+        if self.secret is not None and not isinstance(self.secret,six.binary_type):
+            self.secret = self.secret.encode('utf-8')
   
         if header_signature is None:
             msg = "header_signature is null"
@@ -144,7 +147,7 @@ class FastestDockerCI(Resource):
             return msg
   
         # HMAC requires the key to be bytes, but data is string
-        mac = hmac.new(secret, msg=request.data, digestmod=sha1)
+        mac = hmac.new(self.secret, msg=request.data, digestmod=sha1)
   
         # Python prior to 2.7.7 does not have hmac.compare_digest
         if hexversion >= 0x020707F0:
@@ -164,7 +167,7 @@ class FastestDockerCI(Resource):
 
         trigger_id = kwargs["trigger_id"]
 
-        if str(trigger_id) != os.environ["TRIGGER_ID"]: 
+        if str(trigger_id) != self.trigger_id:
             return "trigger id doesn't match"
 
         return True
@@ -172,9 +175,8 @@ class FastestDockerCI(Resource):
     def _check_trigger_branch(self,**kwargs):
 
         branch = kwargs.get("branch")
-        trigger_branch = os.environ["TRIGGER_BRANCH"]
 
-        if str(branch) == str(trigger_branch): return True
+        if str(branch) == str(self.trigger_branch): return True
 
         msg = "Trigger branch {} does not match branch to test and build on"
         return msg
@@ -197,7 +199,7 @@ class FastestDockerCI(Resource):
         msg = self._check_trigger_branch(**payload)
         if msg is not True: return {"msg":msg}
 
-        filepath = (int(time()))
+        filepath = os.path.join(self.build_queue_dir,str(int(time())))
 
         with open(filepath, 'w') as yaml_file:
             yaml_file.write(yaml.safe_dump(payload,default_flow_style=False))

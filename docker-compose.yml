@@ -1,0 +1,25 @@
+version: '2.0'
+services:
+  api:
+    container_name: fastest-ci-api
+    build: ./
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    env_file: .env
+    volumes:
+      - /var/tmp/docker/fastest_ci/queue:/var/tmp/docker/fastest_ci/queue
+    command: sleep 90000
+  reverse_proxy:
+    build: ./nginx
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    restart: always
+    links:
+      - api
+    ports:
+      - "443:443"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #export ENV_VAR=${ENV_VAR:="app"}
 #export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${JIFFY_SAAS_HOME_DIR}:${JIFFY_SAAS_HOME_DIR}/bin:${JIFFY_SAAS_HOME_DIR}/sbin
@@ -14,7 +14,10 @@
 #then
 #    export THREADS=16
 #fi
+#
+#export THREADS=2
+#
+#gunicorn -w $THREADS -t 900 -b :8021 run:app
 
-export THREADS=2
-
-gunicorn -w $THREADS -t 900 -b :8021 run:app
+source venv/bin/activate
+exec gunicorn -b :8021 --access-logfile - --error-logfile - run:app

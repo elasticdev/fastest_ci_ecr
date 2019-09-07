@@ -1,0 +1,45 @@
+gary
+#creds
+#Configs
+*.py[co]
+*.pyc
+
+*.swo
+*.swl
+
+# Packages
+build
+parts
+#bin
+var
+.installed.cfg
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+#Translations
+*.mo
+
+#Mr Developer
+.mr.developer.cfg
+
+#Misc
+*.swp
+import_files
+
+jiffy.log
+
+*.~*
+
+*.swn
+*.swm
+
+*.pyc
+*.swk
+
+.ropeproject
