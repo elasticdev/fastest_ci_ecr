@@ -8,7 +8,7 @@ FROM nginx
 COPY --from=build /tmp/cert.crt /etc/nginx/cert.crt
 COPY --from=build /tmp/cert.key /etc/nginx/cert.key
 
-COPY nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 443
 
