@@ -11,7 +11,8 @@ services:
     env_file: .env
     volumes:
       - /var/tmp/docker/fastest_ci/queue:/var/tmp/docker/fastest_ci/queue
-    command: sleep 90000
+    command: /opt/api/bin/run.sh
+    #command: sleep 90000
   reverse_proxy:
     build: ./nginx
     logging:
