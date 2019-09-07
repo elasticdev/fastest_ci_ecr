@@ -18,7 +18,7 @@ RUN openssl req -newkey rsa:2048 -new -x509 -subj "/C=US/ST=California/L=SanFran
 
 RUN openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
-EXPOSE 443 80
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
 
