@@ -84,6 +84,19 @@ class FastestDockerCI(Resource):
 
     def _get_payload_fields(self,**kwargs):
 
+        print ''
+        print ''
+        print ''
+        print request.data
+        print ''
+        print ''
+        print ''
+  
+  
+  
+  
+  
+  
         payload = json.load(request.data)
   
         event_type = request.headers.get('X-GitHub-Event')
@@ -158,8 +171,6 @@ class FastestDockerCI(Resource):
             if not str(mac.hexdigest()) == str(signature):
                 msg = "Digest does not match signature"
                 return msg
-  
-        print "Secret/signature matches what is expected"
   
         return True
 
