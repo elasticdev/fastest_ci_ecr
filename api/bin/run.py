@@ -186,23 +186,29 @@ class FastestDockerCI(Resource):
         # Check ipaddress
         msg = self._check_src_ip()
         if msg is not True: return {"msg":msg}
+        print "source ip checked out ok"
 
         msg = self._check_trigger_id(**kwargs)
         if msg is not True: return {"msg":msg}
+        print "trigger_id checked out ok"
 
         msg = self._check_secret(**kwargs)
         if msg is not True: return {"msg":msg}
+        print "secret checked out ok"
 
         payload = self._get_payload_fields()
         if payload.get("status") is False: return payload
+        print "payload checked out ok"
      
         msg = self._check_trigger_branch(**payload)
         if msg is not True: return {"msg":msg}
+        print "trigger branch checked out ok"
 
         filepath = os.path.join(self.build_queue_dir,str(int(time())))
 
         with open(filepath, 'w') as yaml_file:
             yaml_file.write(yaml.safe_dump(payload,default_flow_style=False))
+        print "file written here {}".format(filepath)
 
 api.add_resource(FastestDockerCI, '/<string:trigger_id>')
 
