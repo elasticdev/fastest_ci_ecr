@@ -47,7 +47,7 @@ class FastestDockerCI(Resource):
 
     def _check_src_ip(self):
 
-        ipblocks = self._get_github_ipblocks(name="github")
+        ipblocks = self._get_github_ipblocks()
 
         if len(request.access_route) > 1:
             remote_ip = request.access_route[-1]
