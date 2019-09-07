@@ -24,3 +24,4 @@ services:
       - api
     ports:
       - "443:443"
+      - "80:80"
