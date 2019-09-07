@@ -19,5 +19,6 @@
 #
 #gunicorn -w $THREADS -t 900 -b :8021 run:app
 
-source venv/bin/activate
+#source venv/bin/activate
+
 exec gunicorn -b :8021 --access-logfile - --error-logfile - run:app
