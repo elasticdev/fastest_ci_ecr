@@ -5,7 +5,6 @@ FROM gear2000/jiffy-base:16.04
 COPY requirements.txt requirements.txt
 
 RUN pip install --upgrade pip 
-#RUN hash -d pip
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 COPY ./ /opt/api
