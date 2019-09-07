@@ -200,7 +200,7 @@ class FastestDockerCI(Resource):
 
         print "trigger_id checked out ok"
 
-        msg = self._check_secret(**kwargs)
+        msg = self._check_secret()
 
         if msg is not True: 
             print msg
