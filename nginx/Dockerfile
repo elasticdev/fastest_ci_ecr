@@ -1,4 +1,4 @@
-FROM alpine:3:10 as build
+FROM alpine:3.10 as build
 
 # Install OpenSSL
 RUN apk update && \
