@@ -92,7 +92,7 @@ class FastestDockerCI(Resource):
         print ''
         print 'b'*32
   
-        payload = json.load(request.data)
+        payload = json.loads(request.data)
   
         event_type = request.headers.get('X-GitHub-Event')
   
