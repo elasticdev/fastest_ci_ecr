@@ -7,4 +7,4 @@ RUN venv/bin/pip install gunicorn
 COPY ./ /opt/api
 
 EXPOSE 8021
-ENTRYPOINT ["/opt/bin/run.sh"]
+ENTRYPOINT ["/opt/api/bin/run.sh"]
