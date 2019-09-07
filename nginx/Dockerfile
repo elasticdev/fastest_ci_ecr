@@ -4,8 +4,8 @@ MAINTAINER Gary Leong <gwleong@gmail.com>
 RUN apt-get update && apt-get install -y vim ack-grep 
 RUN apt-get clean && rm -rf /var/cache/apt/archives/*
 
-RUN rm -rf /etc/nginx/sites-enabled/* 
-ADD sites-enabled/ /etc/nginx/sites-enabled/
+RUN rm -rf /etc/nginx/sites-enabled
+ADD sites-enabled/ /etc/nginx/sites-enabled
 
 RUN openssl req -newkey rsa:2048 -new -x509 -subj "/C=US/ST=California/L=SanFrancisco/O=Dis/CN=www.selfsigned.com" -days 1024 -nodes -out /etc/ssl/certs/nginx.crt -keyout /etc/ssl/private/nginx.key 
 RUN openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
