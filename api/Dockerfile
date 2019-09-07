@@ -22,7 +22,7 @@ COPY requirements.txt requirements.txt
 #history
 
 RUN pip install --upgrade pip 
-RUN hash -d pip
+#RUN hash -d pip
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 COPY ./ /opt/api
