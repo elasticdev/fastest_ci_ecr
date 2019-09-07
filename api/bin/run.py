@@ -185,23 +185,47 @@ class FastestDockerCI(Resource):
 
         # Check ipaddress
         msg = self._check_src_ip()
-        if msg is not True: return {"msg":msg}
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
         print "source ip checked out ok"
 
         msg = self._check_trigger_id(**kwargs)
-        if msg is not True: return {"msg":msg}
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
         print "trigger_id checked out ok"
 
         msg = self._check_secret(**kwargs)
-        if msg is not True: return {"msg":msg}
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
         print "secret checked out ok"
 
         payload = self._get_payload_fields()
-        if payload.get("status") is False: return payload
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
         print "payload checked out ok"
      
         msg = self._check_trigger_branch(**payload)
-        if msg is not True: return {"msg":msg}
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
+        if msg is not True: 
+            print msg
+            return {"msg":msg}
+
         print "trigger branch checked out ok"
 
         filepath = os.path.join(self.build_queue_dir,str(int(time())))
