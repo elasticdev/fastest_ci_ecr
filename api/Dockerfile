@@ -21,7 +21,8 @@ COPY requirements.txt requirements.txt
 #pip freeze
 #history
 
-RUN pip install --upgrade pip && hash -d pip
+RUN pip install --upgrade pip 
+RUN hash -d pip
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 COPY ./ /opt/api
