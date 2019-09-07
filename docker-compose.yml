@@ -10,7 +10,7 @@ services:
         max-size: 50m
     env_file: .env
     volumes:
-      - /var/tmp/docker/fastest_ci/queue:/var/tmp/docker/fastest_ci/queue
+      - /var/tmp/docker/fastest-ci/queue:/var/tmp/docker/fastest-ci/queue
     command: /opt/api/bin/run.sh
     #command: sleep 90000
   reverse_proxy:
