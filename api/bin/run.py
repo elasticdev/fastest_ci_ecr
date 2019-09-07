@@ -84,18 +84,13 @@ class FastestDockerCI(Resource):
 
     def _get_payload_fields(self,**kwargs):
 
-        print ''
+        print 'a'*32
         print ''
         print ''
         print request.data
         print ''
         print ''
-        print ''
-  
-  
-  
-  
-  
+        print 'b'*32
   
         payload = json.load(request.data)
   
