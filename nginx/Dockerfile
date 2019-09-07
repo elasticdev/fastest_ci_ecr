@@ -9,7 +9,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/
 RUN rm -rf /etc/nginx/sites-enabled/* 
 ADD sites-enabled/ /etc/nginx/sites-enabled/
 
-ADD snippets/ /etc/nginx/snippets/
+#ADD snippets/ /etc/nginx/snippets/
 RUN mkdir -p /etc/ssl/certs && mkdir -p /etc/ssl/private
 RUN rm -rf /etc/nginx/nginx.conf
 ADD nginx.conf /etc/nginx/nginx.conf
