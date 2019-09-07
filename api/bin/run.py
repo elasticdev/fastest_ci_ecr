@@ -84,14 +84,6 @@ class FastestDockerCI(Resource):
 
     def _get_payload_fields(self,**kwargs):
 
-        print 'a'*32
-        print ''
-        print ''
-        print request.data
-        print ''
-        print ''
-        print 'b'*32
-  
         payload = json.loads(request.data)
   
         event_type = request.headers.get('X-GitHub-Event')
