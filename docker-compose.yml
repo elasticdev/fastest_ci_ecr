@@ -24,3 +24,16 @@ services:
       - api
     ports:
       - "443:443"
+  build:
+    container_name: build-ci
+    build: ./ci
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    env_file: .env
+    volumes:
+      - /var/tmp/docker/fastest-ci/queue:/var/tmp/docker/fastest-ci/queue
+    command: sleep 90000
+    #command: /opt/bin/run.py
