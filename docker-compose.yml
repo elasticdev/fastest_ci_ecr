@@ -36,4 +36,4 @@ services:
     volumes:
       - /var/tmp/docker/fastest-ci/queue:/var/tmp/docker/fastest-ci/queue
     command: sleep 90000
-    #command: /opt/bin/run.py
+    #command: /opt/build.py
