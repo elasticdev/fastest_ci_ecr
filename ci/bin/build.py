@@ -231,11 +231,18 @@ class LocalDockerCI(object):
             results["logs"] = logs
             return results
 
+        print os.environ.get("DOCKER_FILE_TEST")
+        print os.environ.get("DOCKER_FILE_TEST")
+        print os.environ.get("DOCKER_FILE_TEST")
+        print os.environ.get("DOCKER_FILE_TEST")
         if os.environ.get("DOCKER_FILE_TEST"):
             # REPOSITORY_URI This needs to be set for builds
             bresults = build_container(os.environ["DOCKER_FILE_TEST"])
             if bresults.get("logs"): logs.extend(bresults["logs"])
             if not bresults.get("status"):
+                print "ERROR: testing of code failed"
+                print "ERROR: testing of code failed"
+                print "ERROR: testing of code failed"
                 print "ERROR: testing of code failed"
                 results = {"status":False}
                 results["logs"] = logs
