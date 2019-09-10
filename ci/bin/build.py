@@ -242,7 +242,9 @@ class LocalDockerCI(object):
                 return results
 
         # REPOSITORY_URI This needs to be set for builds
-        bresults = build_container()
+        dockerfile = os.environ.get("DOCKER_FILE")
+        if not dockerfile: dockerfile = "Dockerfile"
+        bresults = build_container(dockerfile)
         if bresults.get("logs"): logs.extend(bresults["logs"])
         if not bresults.get("status"):
             print "ERROR: build container failed"
