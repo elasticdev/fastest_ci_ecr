@@ -124,8 +124,9 @@ def git_clone_repo():
     branch = os.environ.get("REPO_BRANCH","master")
 
     if not git_url:
-        print "WARN: git_url not given, not cloning %s" % (repo_dir)
-        return False
+        msg = "WARN: git_url not given, not cloning %s" % (repo_dir)
+        results = {"logs":msg,"status":False}
+        return results
 
     if prv_key_loc:
         wrapper_script = create_git_ssh_wrapper()
@@ -150,9 +151,7 @@ def git_clone_repo():
         add_cmd = "git checkout {}".format(commit)
         cmds.append("cd {}; {}".format(repo_dir,add_cmd))
 
-    run_cmds(cmds)
-
-    return True
+    return run_cmds(cmds)
 
 def build_container(dockerfile="Dockerfile"):
 
@@ -227,10 +226,14 @@ class LocalDockerCI(object):
         os.environ["REPO_BRANCH"] = loaded_yaml.get("branch","master")
 
         try:
-            status = git_clone_repo()
-            logs.append("clone of code with commit_hash {} succeeded".format(loaded_yaml["commit_hash"]))
+            cresults = git_clone_repo()
+            if cresults.get("logs"): logs.extend(cresults["logs"])
+            if cresults.get("status") is False: status = False
         except:
             status = False
+
+        print '1'*32
+        print logs
 
         if not status:
             msg = "ERROR: clone/pull latest code failed"
@@ -242,27 +245,29 @@ class LocalDockerCI(object):
 
         # REPOSITORY_URI This needs to be set for builds
         bresults = build_container()
-        print bresults
-        print bresults
-        print bresults
-        print bresults
-        if not bresults.get("logs"): logs.extend(bresults.get("logs"))
+        if not bresults.get("logs"): logs.extend(bresults["logs"])
         if not bresults.get("status"):
             print "ERROR: build container failed"
             results = {"status":False}
             results["logs"] = logs
             return results
 
+        print '2'*32
+        print logs
+
         msg = "build container succeeded"
         logs.append(msg)
 
         presults = push_container()
-        if not presults.get("logs"): logs.extend(presults.get("logs"))
+        if not bresults.get("logs"): logs.extend(bresults.get("logs"))
         if not presults.get("status"):
             print "ERROR: push container failed"
             results = {"status":False}
             results["logs"] = logs
             return results
+
+        print '3'*32
+        print logs
 
         msg = "push container succeeded"
         logs.append(msg)
