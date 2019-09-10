@@ -24,7 +24,7 @@ services:
       - api
     ports:
       - "443:443"
-  build:
+  build-ci:
     container_name: build-ci
     build: ./ci
     restart: always
