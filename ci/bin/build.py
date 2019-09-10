@@ -131,12 +131,12 @@ def git_clone_repo():
     _branch = "master"
     if not branch: _branch = branch
 
-    add_cmd = "cd {}; git pull origin {}".format(repo_dir,_branch)
+    add_cmd = "git pull origin {}".format(_branch)
 
     if base_cmd:
-        cmds.append("{} {}".format(base_cmd,add_cmd))
+        cmds.append("cd {}; {} {}".format(repo_dir,base_cmd,add_cmd))
     else:
-        cmds.append(add_cmd)
+        cmds.append("cd {}; {}".format(repo_dir,add_cmd))
 
     if commit:
         add_cmd = "git checkout {}".format(commit)
