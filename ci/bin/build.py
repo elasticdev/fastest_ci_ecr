@@ -81,7 +81,6 @@ def run_cmds(cmds):
     logs = []
 
     for cmd in cmds:
-        print 'Executing "{}"'.format(cmd)
         result = run_cmd(cmd)
         if result.get("logs"): logs.extend(result["logs"])
         if result.get("status") is True: continue
@@ -231,6 +230,16 @@ class LocalDockerCI(object):
             results = {"status":False}
             results["logs"] = logs
             return results
+
+        if os.environ.get("DOCKER_FILE_TEST"):
+            # REPOSITORY_URI This needs to be set for builds
+            bresults = build_container(os.environ["DOCKER_FILE_TEST"])
+            if bresults.get("logs"): logs.extend(bresults["logs"])
+            if not bresults.get("status"):
+                print "ERROR: testing of code failed"
+                results = {"status":False}
+                results["logs"] = logs
+                return results
 
         # REPOSITORY_URI This needs to be set for builds
         bresults = build_container()
