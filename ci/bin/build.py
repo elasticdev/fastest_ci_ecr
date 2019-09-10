@@ -142,14 +142,14 @@ def git_clone_repo():
 
     return True
 
-def build_container():
+def build_container(dockerfile="Dockerfile"):
 
     repo_dir = os.environ["DOCKER_BUILD_DIR"]
     repository_uri = os.environ["REPOSITORY_URI"]
     tag = os.environ["COMMIT_HASH"][0:6]
     cmds = []
-    cmds.append("cd {}; docker build -t {}:{} . -f {}".format(repo_dir,repository_uri,tag))
-    cmds.append("cd {}; docker build -t {}:latest . -f {}".format(repo_dir,repository_uri))
+    cmds.append("cd {}; docker build -t {}:{} . -f {}".format(repo_dir,repository_uri,tag,dockerfile))
+    cmds.append("cd {}; docker build -t {}:latest . -f {}".format(repo_dir,repository_uri,dockerfile))
 
     return run_cmds(cmds)
 
