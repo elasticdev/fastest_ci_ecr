@@ -69,6 +69,15 @@ def run_cmd(cmd):
         results = {"status":False}
 
     results["logs"] = [line.rstrip('\n') for line in open(log_file,"r")]
+
+    print 'a'*32
+    print 'a'*32
+    print results["logs"]
+    print 'a'*32
+    print 'a'*32
+    print open(log_file,"r").readlines()
+    print 'b'*32
+    print 'b'*32
     os.system("rm -rf {}".format(log_file))
 
     return results
@@ -82,13 +91,13 @@ def run_cmds(cmds):
     for cmd in cmds:
         print 'Executing "{}"'.format(cmd)
         result = run_cmd(cmd)
-        if result.get("log"): logs.extend(result["log"])
+        if result.get("logs"): logs.extend(result["logs"])
         if result.get("status") is True: continue
         status = False
         break
 
     results = {"status":status}
-    results["log"] = logs
+    results["logs"] = logs
 
     return results
 
