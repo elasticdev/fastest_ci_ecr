@@ -162,9 +162,16 @@ def build_container():
 def push_container():
 
     repository_uri = os.environ["REPOSITORY_URI"]
+    ecr_login = os.environ["ECR_LOGIN"]
     tag = os.environ["COMMIT_HASH"][0:6]
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
+    print ''
+    print ''
+    print ecr_login
+    print ''
+    print ''
+    cmds.append(ecr_login)
     cmd = "docker push {}".format(repository_uri)
     cmds.append(cmd)
 
@@ -221,9 +228,6 @@ class LocalDockerCI(object):
 
         # REPOSITORY_URI This needs to be set for builds
         status = build_container()
-        print status
-        print status
-        print status
         if not status: return False
 
         push_container()
