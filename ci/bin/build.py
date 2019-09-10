@@ -148,10 +148,6 @@ def git_clone_repo():
 
     return True
 
-if __name__ == '__main__':
-    git_clone_repo()
-
-
 class LocalDockerCI(object):
 
     def __init__(self):
