@@ -176,7 +176,7 @@ def push_container():
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
     cmds.append(ecr_login)
-    cmd = "docker push {} > {} 2>*1".format(repository_uri,log_file)
+    cmd = "docker push {} > {} 2>&1".format(repository_uri,log_file)
     cmds.append(cmd)
 
     status = run_cmds(cmds,exit_error=False)
