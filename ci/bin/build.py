@@ -257,6 +257,9 @@ class LocalDockerCI(object):
             results["log"] = log
             return results
 
+        msg = "build container succeeded"
+        log.append(msg)
+
         presults = push_container()
         if not presults.get("log"): log.extend(presults.get("log"))
         if not presults.get("status"):
@@ -265,6 +268,10 @@ class LocalDockerCI(object):
             results["log"] = log
             return results
 
+        msg = "push container succeeded"
+        log.append(msg)
+
+        results["log"] = log
         return results
 
     def run(self):
