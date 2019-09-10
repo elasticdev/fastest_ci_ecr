@@ -224,9 +224,6 @@ class LocalDockerCI(object):
             results["logs"] = logs
             return results
 
-        print '1'*32
-        print logs
-
         if not status:
             msg = "ERROR: clone/pull latest code failed"
             print msg
@@ -244,9 +241,6 @@ class LocalDockerCI(object):
             results["logs"] = logs
             return results
 
-        print '2'*32
-        print logs
-
         msg = "build container succeeded"
         logs.append(msg)
 
@@ -257,15 +251,6 @@ class LocalDockerCI(object):
             results = {"status":False}
             results["logs"] = logs
             return results
-
-        print '3a'*32
-        print ''
-        print ''
-        print bresults.get("logs")
-        print ''
-        print ''
-        print '3b'*32
-        print logs
 
         msg = "push container succeeded"
         logs.append(msg)
@@ -282,15 +267,15 @@ class LocalDockerCI(object):
             results["schedule_id"] = schedule_id
 
             if results.get("logs"):
-                print '4'*32
-                print ''
-                print ''
+                print '*'*32
+                print '*'*32
                 print 'Log for test and build'
+                print ''
                 for log in results["logs"]:
                     print log
                 print ''
-                print ''
-                print ''
+                print '*'*32
+                print '*'*32
             sleep(1)
 
 if __name__ == "__main__":
