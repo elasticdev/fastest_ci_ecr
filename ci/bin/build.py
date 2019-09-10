@@ -72,10 +72,13 @@ def run_cmd(cmd):
 
     print 'a'*32
     print 'a'*32
+    print ''
+    print ''
     print results["logs"]
-    print 'a'*32
-    print 'a'*32
-    print open(log_file,"r").readlines()
+    print ''
+    print len(results["logs"])
+    print ''
+    print ''
     print 'b'*32
     print 'b'*32
     os.system("rm -rf {}".format(log_file))
