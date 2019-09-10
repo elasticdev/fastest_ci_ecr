@@ -273,7 +273,12 @@ class LocalDockerCI(object):
 
         while True:
             schedule_id = os.environ["SCHEDULE_ID"]
-            results = self._run()
+            try:
+                results = self._run()
+            except:
+                print "ERROR: Something went wrong with testing and building the code"
+                continue
+
             if results.get("status") is False: results["status"] = "failed"
             results["schedule_id"] = schedule_id
 
@@ -287,6 +292,7 @@ class LocalDockerCI(object):
                 print ''
                 print '*'*32
                 print '*'*32
+
             sleep(1)
 
 if __name__ == "__main__":
