@@ -39,7 +39,7 @@ git "$@"
 
     return filename
 
-def execute_return_exit(cmd):
+def execute_cmd(cmd):
   
     process = Popen(cmd,shell=True,bufsize=0,stdout=PIPE,stderr=STDOUT)
   
@@ -55,46 +55,42 @@ def execute_return_exit(cmd):
   
     return exitcode
 
-def run_cmd(cmd,exit_error=False):
+def run_cmd(cmd):
+
+    log_file = "/tmp/{}".format(id_generator(size=6,chars=string.ascii_uppercase+string.digits))
 
     print 'executing cmd "{}"'.format(cmd)
 
-    exitcode = execute_return_exit(cmd)
-    if exitcode == 0: return True
+    exitcode = execute_cmd("{} > {} 2>&1".format(cmd,log_file))
 
-    if exit_error: exit(exitcode)
+    if exitcode == 0: 
+        results = {"status":True}
+    else:
+        results = {"status":False}
 
-    return False
+    results["logs"] = [line.rstrip('\n') for line in open(log_file,"r")]
+    os.system("rm -rf {}".format(log_file))
 
-def run_cmds(cmds,exit_error=True):
+    return results
+
+def run_cmds(cmds):
+
+    status = True
+
+    logs = []
 
     for cmd in cmds:
         print 'Executing "{}"'.format(cmd)
-        exitcode = execute_return_exit(cmd)
-        if exitcode == 0: continue
-        print 'Executing "{}" failed with exitcode={}'.format(cmd,exitcode)
-        if exit_error: sys.exit(1)
-        return False
+        result = run_cmd(cmd)
+        if result.get("log"): logs.extend(result["log"])
+        if result.get("status") is True: continue
+        status = False
+        break
 
-    return True
+    results = {"status":status}
+    results["log"] = logs
 
-def execute(cmd,unbuffered=False):
-
-    '''executes a shell command, returning status of execution,
-    standard out, and standard error'''
-
-    process = Popen(cmd,shell=True,bufsize=0,stdout=PIPE,stderr=STDOUT)
-
-    line = process.stdout.readline()
-
-    while line:
-        line = line.strip()
-        print line
-
-    out,error = process.communicate()
-    exitcode = process.returncode
-
-    return exitcode
+    return results
 
 def id_generator(size=6,chars=string.ascii_uppercase+string.digits):
 
@@ -148,27 +144,16 @@ def git_clone_repo():
 
 def build_container():
 
-    log_file = "/tmp/{}".format(id_generator(size=6,chars=string.ascii_uppercase+string.digits))
     repo_dir = os.environ["DOCKER_BUILD_DIR"]
     repository_uri = os.environ["REPOSITORY_URI"]
     tag = os.environ["COMMIT_HASH"][0:6]
     cmds = []
-    cmd = "cd {}; docker build -t {}:{} . > {} 2>&1 ".format(repo_dir,repository_uri,tag,log_file)
-    cmds.append(cmd)
-    cmd = "cd {}; docker build -t {}:latest .  >> {} 2>&1".format(repo_dir,repository_uri,log_file)
-    cmds.append(cmd)
+    cmds.append("cd {}; docker build -t {}:{} . -f {}".format(repo_dir,repository_uri,tag))
+    cmds.append("cd {}; docker build -t {}:latest . -f {}".format(repo_dir,repository_uri))
 
-    status = run_cmds(cmds,exit_error=False)
-
-    results = {"status":status}
-    results["log"] = [line.rstrip('\n') for line in open(log_file)]
-    os.system("rm -rf {}".format(log_file))
-
-    return results
+    return run_cmds(cmds)
 
 def push_container():
-
-    log_file = "/tmp/{}".format(id_generator(size=6,chars=string.ascii_uppercase+string.digits))
 
     repository_uri = os.environ["REPOSITORY_URI"]
     ecr_login = os.environ["ECR_LOGIN"]
@@ -176,15 +161,10 @@ def push_container():
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
     cmds.append(ecr_login)
-    cmd = "docker push {} > {} 2>&1".format(repository_uri,log_file)
+    cmd = "docker push {}".format(repository_uri)
     cmds.append(cmd)
-    status = run_cmds(cmds,exit_error=False)
 
-    results = {"status":status}
-    results["log"] = [line.rstrip('\n') for line in open(log_file)]
-    os.system("rm -rf {}".format(log_file))
-
-    return results
+    return run_cmds(cmds)
 
 class LocalDockerCI(object):
 
@@ -210,19 +190,19 @@ class LocalDockerCI(object):
         file_path = self._get_next_build()
         if not file_path: return results
 
-        log = []
+        logs = []
 
         try:
             yaml_str = open(file_path,'r').read()
             loaded_yaml = dict(yaml.load(yaml_str))
-            log.append("payload from webhook loaded and read")
+            logs.append("payload from webhook loaded and read")
         except:
             loaded_yaml = None
             msg = "ERROR: could not load yaml at {} - skipping build".format(file_path)
             print msg
-            log.append(msg)
+            logs.append(msg)
             results = {"status":False}
-            results["log"] = log
+            results["logs"] = logs
             return results
 
         os.system("rm -rf {}".format(file_path))
@@ -236,42 +216,42 @@ class LocalDockerCI(object):
 
         try:
             status = git_clone_repo()
-            log.append("clone of code with commit_hash {} succeeded".format(loaded_yaml["commit_hash"]))
+            logs.append("clone of code with commit_hash {} succeeded".format(loaded_yaml["commit_hash"]))
         except:
             status = False
 
         if not status:
             msg = "ERROR: clone/pull latest code failed"
             print msg
-            log.append(msg)
+            logs.append(msg)
             results = {"status":False}
-            results["log"] = log
+            results["logs"] = logs
             return results
 
         # REPOSITORY_URI This needs to be set for builds
         bresults = build_container()
-        if not bresults.get("log"): log.extend(bresults.get("log"))
+        if not bresults.get("logs"): logs.extend(bresults.get("logs"))
         if not bresults.get("status"):
             print "ERROR: build container failed"
             results = {"status":False}
-            results["log"] = log
+            results["logs"] = logs
             return results
 
         msg = "build container succeeded"
-        log.append(msg)
+        logs.append(msg)
 
         presults = push_container()
-        if not presults.get("log"): log.extend(presults.get("log"))
+        if not presults.get("logs"): logs.extend(presults.get("logs"))
         if not presults.get("status"):
             print "ERROR: push container failed"
             results = {"status":False}
-            results["log"] = log
+            results["logs"] = logs
             return results
 
         msg = "push container succeeded"
-        log.append(msg)
+        logs.append(msg)
 
-        results["log"] = log
+        results["logs"] = logs
         return results
 
     def run(self):
@@ -282,9 +262,9 @@ class LocalDockerCI(object):
             if results.get("status") is False: results["status"] = "failed"
             results["schedule_id"] = schedule_id
 
-            if results.get("log"):
+            if results.get("logs"):
                 print 'Log for test and build'
-                for log in results["log"]:
+                for log in results["logs"]:
                     print log
             sleep(1)
 
