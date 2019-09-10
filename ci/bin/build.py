@@ -148,16 +148,24 @@ def git_clone_repo():
 
 def build_container():
 
+    log_file = "/tmp/{}".format(id_generator(size=6,chars=string.ascii_uppercase+string.digits))
     repo_dir = os.environ["DOCKER_BUILD_DIR"]
     repository_uri = os.environ["REPOSITORY_URI"]
     tag = os.environ["COMMIT_HASH"][0:6]
     cmds = []
-    cmd = "cd {}; docker build -t {}:{} . ".format(repo_dir,repository_uri,tag)
+    cmd = "cd {}; docker build -t {}:{} . >> {} 2>&1 ".format(repo_dir,repository_uri,tag,log_file)
     cmds.append(cmd)
-    cmd = "cd {}; docker build -t {}:latest . ".format(repo_dir,repository_uri)
+    cmd = "cd {}; docker build -t {}:latest .  >> {} 2>&1".format(repo_dir,repository_uri,log_file)
     cmds.append(cmd)
 
-    return run_cmds(cmds,exit_error=False)
+    status = run_cmds(cmds,exit_error=False)
+    results = {"status":status}
+
+    log = [line.rstrip('\n') for line in open(log_file)]
+
+    results["log"] = log
+
+    return results
 
 def push_container():
 
@@ -166,11 +174,6 @@ def push_container():
     tag = os.environ["COMMIT_HASH"][0:6]
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
-    print ''
-    print ''
-    print ecr_login
-    print ''
-    print ''
     cmds.append(ecr_login)
     cmd = "docker push {}".format(repository_uri)
     cmds.append(cmd)
@@ -199,12 +202,21 @@ class LocalDockerCI(object):
         file_path = self._get_next_build()
         if not file_path: return
 
+        results = {"status":None}
+        log = []
+
         try:
             yaml_str = open(file_path,'r').read()
             loaded_yaml = dict(yaml.load(yaml_str))
+            log.append("payload from webhook loaded and read")
         except:
             loaded_yaml = None
-            print "WARN: could not load yaml at {} - skipping build".format(file_path)
+            msg = "ERROR: could not load yaml at {} - skipping build".format(file_path)
+            print msg
+            log.append(msg)
+            results = {"status":False}
+            results["log"] = log
+            return results
 
         os.system("rm -rf {}".format(file_path))
         if not loaded_yaml: return
@@ -215,27 +227,46 @@ class LocalDockerCI(object):
         os.environ["COMMIT_HASH"] = loaded_yaml["commit_hash"]
         os.environ["REPO_BRANCH"] = loaded_yaml.get("branch","master")
 
-        status = git_clone_repo()
-
-        #try:
-        #    status = git_clone_repo()
-        #except:
-        #    status = False
+        try:
+            status = git_clone_repo()
+            log.append("clone of code with commit_hash {} succeeded".format(loaded_yaml["commit_hash"]))
+        except:
+            status = False
 
         if not status:
-            print "ERROR: clone/pull latest code failed"
-            return False
+            msg = "ERROR: clone/pull latest code failed"
+            print msg
+            log.append(msg)
+            results = {"status":False}
+            results["log"] = log
+            return results
 
         # REPOSITORY_URI This needs to be set for builds
-        status = build_container()
-        if not status: return False
+        bresults = build_container()
+        if not bresults.get("log"): log.extend(bresults.get("log"))
+        if not bresults.get("status"):
+            print "ERROR: build container failed"
+            results = {"status":False}
+            results["log"] = log
+            return results
 
-        push_container()
+        presults = push_container()
+        if not presults.get("log"): log.extend(presults.get("log"))
+        if not presults.get("status"):
+            print "ERROR: push container failed"
+            results = {"status":False}
+            results["log"] = log
+            return results
+
+        return results
 
     def run(self):
 
         while True:
-            self._run()
+            schedule_id = os.environ["SCHEDULE_ID"]
+            results = self._run()
+            if results.get("status") is False: results["status"] = "failed"
+            results["schedule_id"] = schedule_id
             sleep(1)
 
 if __name__ == "__main__":
