@@ -153,7 +153,7 @@ def build_container():
     repository_uri = os.environ["REPOSITORY_URI"]
     tag = os.environ["COMMIT_HASH"][0:6]
     cmds = []
-    cmd = "cd {}; docker build -t {}:{} . >> {} 2>&1 ".format(repo_dir,repository_uri,tag,log_file)
+    cmd = "cd {}; docker build -t {}:{} . > {} 2>&1 ".format(repo_dir,repository_uri,tag,log_file)
     cmds.append(cmd)
     cmd = "cd {}; docker build -t {}:latest .  >> {} 2>&1".format(repo_dir,repository_uri,log_file)
     cmds.append(cmd)
@@ -176,7 +176,7 @@ def push_container():
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
     cmds.append(ecr_login)
-    cmd = "docker push {} >> {} 2>*1".format(repository_uri,log_file)
+    cmd = "docker push {} > {} 2>*1".format(repository_uri,log_file)
     cmds.append(cmd)
 
     status = run_cmds(cmds,exit_error=False)
