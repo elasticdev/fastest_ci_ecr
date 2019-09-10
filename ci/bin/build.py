@@ -91,18 +91,6 @@ def run_cmds(cmds):
     results = {"status":status}
     results["logs"] = logs
 
-    print 'a'*32
-    print 'a'*32
-    print ''
-    print ''
-    print result["logs"]
-    print ''
-    print len(result["logs"])
-    print ''
-    print ''
-    print 'b'*32
-    print 'b'*32
-
     return results
 
 def id_generator(size=6,chars=string.ascii_uppercase+string.digits):
@@ -263,7 +251,7 @@ class LocalDockerCI(object):
         logs.append(msg)
 
         presults = push_container()
-        if bresults.get("logs"): logs.extend(bresults.get("logs"))
+        if presults.get("logs"): logs.extend(presults.get("logs"))
         if not presults.get("status"):
             print "ERROR: push container failed"
             results = {"status":False}
