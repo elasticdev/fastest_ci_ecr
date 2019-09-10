@@ -116,7 +116,7 @@ def git_clone_repo():
     branch = os.environ.get("REPO_BRANCH","master")
 
     if not git_url:
-        print "git_url not given, not cloning %s" % (repo_dir)
+        print "WARN: git_url not given, not cloning %s" % (repo_dir)
         return False
 
     if prv_key_loc:
@@ -208,12 +208,14 @@ class LocalDockerCI(object):
         os.environ["COMMIT_HASH"] = loaded_yaml["commit_hash"]
         os.environ["REPO_BRANCH"] = loaded_yaml.get("branch","master")
 
-        try:
-            status = git_clone_repo()
-        except:
-            status = False
+        status = git_clone_repo()
 
-        if status:
+        #try:
+        #    status = git_clone_repo()
+        #except:
+        #    status = False
+
+        if not status:
             print "ERROR: clone/pull latest code failed"
             return False
 
