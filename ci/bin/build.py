@@ -269,7 +269,13 @@ class LocalDockerCI(object):
             results["logs"] = logs
             return results
 
-        print '3'*32
+        print '3a'*32
+        print ''
+        print ''
+        print bresults.get("logs")
+        print ''
+        print ''
+        print '3b'*32
         print logs
 
         msg = "push container succeeded"
@@ -287,9 +293,15 @@ class LocalDockerCI(object):
             results["schedule_id"] = schedule_id
 
             if results.get("logs"):
+                print '4'*32
+                print ''
+                print ''
                 print 'Log for test and build'
                 for log in results["logs"]:
                     print log
+                print ''
+                print ''
+                print ''
             sleep(1)
 
 if __name__ == "__main__":
