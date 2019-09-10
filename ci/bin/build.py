@@ -176,9 +176,11 @@ class LocalDockerCI(object):
         filenames = sorted(os.listdir(self.build_queue_dir))
         if not filenames: return
 
-        print filenames
+        print 'Queue contains {}'.format(filenames)
 
         filename = os.path.join(self.build_queue_dir,filenames[0])
+
+        print 'Returning {} to build'.format(filename)
 
         return filename
 
@@ -272,7 +274,9 @@ class LocalDockerCI(object):
     def run(self):
 
         while True:
+
             schedule_id = os.environ["SCHEDULE_ID"]
+            
             try:
                 results = self._run()
             except:
