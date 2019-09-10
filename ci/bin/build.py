@@ -199,10 +199,11 @@ class LocalDockerCI(object):
 
     def _run(self):
         
-        file_path = self._get_next_build()
-        if not file_path: return
-
         results = {"status":None}
+
+        file_path = self._get_next_build()
+        if not file_path: return results
+
         log = []
 
         try:
