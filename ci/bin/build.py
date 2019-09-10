@@ -159,15 +159,16 @@ def build_container():
     cmds.append(cmd)
 
     status = run_cmds(cmds,exit_error=False)
+
     results = {"status":status}
-
-    log = [line.rstrip('\n') for line in open(log_file)]
-
-    results["log"] = log
+    results["log"] = [line.rstrip('\n') for line in open(log_file)]
+    os.system("rm -rf {}".format(log_file))
 
     return results
 
 def push_container():
+
+    log_file = "/tmp/{}".format(id_generator(size=6,chars=string.ascii_uppercase+string.digits))
 
     repository_uri = os.environ["REPOSITORY_URI"]
     ecr_login = os.environ["ECR_LOGIN"]
@@ -175,10 +176,18 @@ def push_container():
     print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
     cmds.append(ecr_login)
-    cmd = "docker push {}".format(repository_uri)
+    cmd = "docker push {} >> {} 2>*1".format(repository_uri,log_file)
     cmds.append(cmd)
 
-    run_cmds(cmds,exit_error=False)
+    status = run_cmds(cmds,exit_error=False)
+
+    os.system("rm -rf {}".format(log_file))
+
+    results = {"status":status}
+    results["log"] = [line.rstrip('\n') for line in open(log_file)]
+    os.system("rm -rf {}".format(log_file))
+
+    return results
 
 class LocalDockerCI(object):
 
