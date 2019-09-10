@@ -70,17 +70,6 @@ def run_cmd(cmd):
 
     results["logs"] = [line.rstrip('\n') for line in open(log_file,"r")]
 
-    print 'a'*32
-    print 'a'*32
-    print ''
-    print ''
-    print results["logs"]
-    print ''
-    print len(results["logs"])
-    print ''
-    print ''
-    print 'b'*32
-    print 'b'*32
     os.system("rm -rf {}".format(log_file))
 
     return results
@@ -94,7 +83,20 @@ def run_cmds(cmds):
     for cmd in cmds:
         print 'Executing "{}"'.format(cmd)
         result = run_cmd(cmd)
-        if result.get("logs"): logs.extend(result["logs"])
+        if result.get("logs"): 
+            logs.extend(result["logs"])
+            print 'a'*32
+            print 'a'*32
+            print ''
+            print ''
+            print result["logs"]
+            print ''
+            print len(result["logs"])
+            print ''
+            print ''
+            print 'b'*32
+            print 'b'*32
+
         if result.get("status") is True: continue
         status = False
         break
