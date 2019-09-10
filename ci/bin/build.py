@@ -225,12 +225,15 @@ class LocalDockerCI(object):
         os.environ["COMMIT_HASH"] = loaded_yaml["commit_hash"]
         os.environ["REPO_BRANCH"] = loaded_yaml.get("branch","master")
 
-        try:
-            cresults = git_clone_repo()
-            if cresults.get("logs"): logs.extend(cresults["logs"])
-            if cresults.get("status") is False: status = False
-        except:
-            status = False
+        status = True
+
+        cresults = git_clone_repo()
+        if cresults.get("logs"): logs.extend(cresults["logs"])
+        if not cresults.get("status"):
+            print "ERROR: cloning code failed"
+            results = {"status":False}
+            results["logs"] = logs
+            return results
 
         print '1'*32
         print logs
@@ -245,7 +248,7 @@ class LocalDockerCI(object):
 
         # REPOSITORY_URI This needs to be set for builds
         bresults = build_container()
-        if not bresults.get("logs"): logs.extend(bresults["logs"])
+        if bresults.get("logs"): logs.extend(bresults["logs"])
         if not bresults.get("status"):
             print "ERROR: build container failed"
             results = {"status":False}
@@ -259,7 +262,7 @@ class LocalDockerCI(object):
         logs.append(msg)
 
         presults = push_container()
-        if not bresults.get("logs"): logs.extend(bresults.get("logs"))
+        if bresults.get("logs"): logs.extend(bresults.get("logs"))
         if not presults.get("status"):
             print "ERROR: push container failed"
             results = {"status":False}
