@@ -83,26 +83,25 @@ def run_cmds(cmds):
     for cmd in cmds:
         print 'Executing "{}"'.format(cmd)
         result = run_cmd(cmd)
-        if result.get("logs"): 
-            logs.extend(result["logs"])
-            print 'a'*32
-            print 'a'*32
-            print ''
-            print ''
-            print result["logs"]
-            print ''
-            print len(result["logs"])
-            print ''
-            print ''
-            print 'b'*32
-            print 'b'*32
-
+        if result.get("logs"): logs.extend(result["logs"])
         if result.get("status") is True: continue
         status = False
         break
 
     results = {"status":status}
     results["logs"] = logs
+
+    print 'a'*32
+    print 'a'*32
+    print ''
+    print ''
+    print result["logs"]
+    print ''
+    print len(result["logs"])
+    print ''
+    print ''
+    print 'b'*32
+    print 'b'*32
 
     return results
 
