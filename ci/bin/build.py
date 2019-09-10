@@ -128,8 +128,6 @@ def git_clone_repo():
 
     cmds = []
 
-    if os.path.exists(repo_dir): cmds.append("rm -rf {}".format(repo_dir))
-
     _branch = "master"
     if not branch: _branch = branch
 
