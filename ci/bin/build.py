@@ -178,10 +178,7 @@ def push_container():
     cmds.append(ecr_login)
     cmd = "docker push {} > {} 2>&1".format(repository_uri,log_file)
     cmds.append(cmd)
-
     status = run_cmds(cmds,exit_error=False)
-
-    os.system("rm -rf {}".format(log_file))
 
     results = {"status":status}
     results["log"] = [line.rstrip('\n') for line in open(log_file)]
