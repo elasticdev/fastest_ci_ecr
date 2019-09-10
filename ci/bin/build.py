@@ -274,6 +274,11 @@ class LocalDockerCI(object):
             results = self._run()
             if results.get("status") is False: results["status"] = "failed"
             results["schedule_id"] = schedule_id
+
+            if results.get("log"):
+                print 'Log for test and build'
+                for log in results["logs"]:
+                    print log
             sleep(1)
 
 if __name__ == "__main__":
