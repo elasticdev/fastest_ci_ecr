@@ -230,6 +230,10 @@ class LocalDockerCI(object):
 
         # REPOSITORY_URI This needs to be set for builds
         bresults = build_container()
+        print bresults
+        print bresults
+        print bresults
+        print bresults
         if not bresults.get("logs"): logs.extend(bresults.get("logs"))
         if not bresults.get("status"):
             print "ERROR: build container failed"
