@@ -284,7 +284,7 @@ class LocalDockerCI(object):
 
             if results.get("log"):
                 print 'Log for test and build'
-                for log in results["logs"]:
+                for log in results["log"]:
                     print log
             sleep(1)
 
