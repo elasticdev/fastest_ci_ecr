@@ -157,7 +157,7 @@ def build_container():
     cmd = "cd {}; docker build -t {}:latest . ".format(repo_dir,repository_uri)
     cmds.append(cmd)
 
-    run_cmds(cmds,exit_error=False)
+    return run_cmds(cmds,exit_error=False)
 
 def push_container():
 
@@ -221,6 +221,9 @@ class LocalDockerCI(object):
 
         # REPOSITORY_URI This needs to be set for builds
         status = build_container()
+        print status
+        print status
+        print status
         if not status: return False
 
         push_container()
