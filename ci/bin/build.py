@@ -446,6 +446,11 @@ class LocalDockerCI(object):
 
             status,orders = self._run()
             if status is None: 
+                print 'b'*32
+                print 'b'*32
+                print 'b'*32
+                print 'b'*32
+                print 'b'*32
                 sleep(1)
                 continue
             print 'a'*32
