@@ -200,11 +200,10 @@ def execute_http_post(**kwargs):
         inputargs["verify"] = False
 
     if data: 
-        inputargs["data"] = data
-        #if isinstance(data,str):
-        #    inputargs["data"] = data
-        #else:
-        #    inputargs["data"] = json.dumps(data)
+        if isinstance(data,str):
+            inputargs["data"] = data
+        else:
+            inputargs["data"] = json.dumps(data)
 
     print 'making post on'
     print 'api_endpoint "{}"'.format(api_endpoint)
@@ -483,7 +482,7 @@ class LocalDockerCI(object):
             self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
-            inputargs["headers"] = {}
+            inputargs["headers"] = {'content-type': 'application/json'}
             inputargs["headers"]["Token"] = self.token
             inputargs["api_endpoint"] = "https://{}/{}".format(self.queue_host,"api/v1.0/run")
             inputargs["data"] = data
