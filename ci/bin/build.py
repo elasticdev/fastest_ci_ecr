@@ -205,10 +205,10 @@ def execute_http_post(**kwargs):
         else:
             inputargs["data"] = json.dumps(data)
 
-    print 'making post on api_endpoint "{}"'.format(api_endpoint)
-    print 'making post on api_endpoint "{}"'.format(api_endpoint)
-    print 'making post on api_endpoint "{}"'.format(api_endpoint)
-    print 'making post on api_endpoint "{}"'.format(api_endpoint)
+    print 'making post on'
+    print 'api_endpoint "{}"'.format(api_endpoint)
+    print 'headers "{}"'.format(headers)
+    print 'verify "{}"'.format(verify)
 
     req = requests.post(api_endpoint,**inputargs)
 
@@ -217,6 +217,7 @@ def execute_http_post(**kwargs):
     #status code between 400 and 500 are failures.
     if status_code > 399 and status_code < 600: 
         print "ERROR: Looks like the http post failed!"
+        raise
         return False
 
     print "ERROR: Looks like the http post succeeded!"
@@ -446,20 +447,10 @@ class LocalDockerCI(object):
 
             status,orders = self._run()
             if status is None: 
-                print 'b'*32
-                print 'b'*32
-                print 'b'*32
-                print 'b'*32
-                print 'b'*32
+                print 'a'*32
                 sleep(1)
                 continue
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
+            print 'b'*32
             #try:
             #    status,orders = self._run()
             #    if status is None: raise
@@ -481,9 +472,9 @@ class LocalDockerCI(object):
             
             #print '*'*32
             #print '*'*32
-            print ''
-            print 'Log for test and build'
-            print ''
+            #print ''
+            #print 'Log for test and build'
+            #print ''
             #print_json(inputargs)
             #print ''
             #print '*'*32
