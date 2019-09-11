@@ -253,10 +253,7 @@ class LocalDockerCI(object):
 
         return order
 
-    def _load_webhook(self,fork,**kwargs):
-
-        file_path = self._get_next_build()
-        if not file_path: return 
+    def _load_webhook(self,fork,file_path):
 
         inputargs = {"start_time":int(time())}
         inputargs["human_description"] = "loading webhook information"
@@ -389,11 +386,14 @@ class LocalDockerCI(object):
 
     def _run(self):
 
+        file_path = self._get_next_build()
+        if not file_path: return 
+
         # Get a new fork run
         fork = self._get_new_fork()
 
         # load webhook
-        loaded_yaml = self._load_webhook(fork)
+        loaded_yaml = self._load_webhook(fork,file_path)
         if fork["status"] == "failed": return fork
 
         # clone code
