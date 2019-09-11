@@ -370,9 +370,20 @@ class LocalDockerCI(object):
         fork = {"status":"running"}
         fork["automation_phase"] = "continuous_delivery"
         fork["orders"] = []
-        if os.environ.get("JOB_NAME"): fork["job_name"] = os.environ["JOB_NAME"]
+        fork["job_name"] = "docker_ci"
+        fork["run_title"] = "docker_ci"
+        fork["sched_name"] = "docker_ci"
+        fork["sched_type"] = "build"
+
         if os.environ.get("PROJECT_ID"): fork["project_id"] = os.environ["PROJECT_ID"]
         if os.environ.get("SCHEDULE_ID"): fork["schedule_id"] = os.environ["SCHEDULE_ID"]
+        if os.environ.get("SCHED_TYPE"): fork["sched_type"] = os.environ["SCHED_TYPE"]
+        if os.environ.get("SCHED_NAME"): fork["sched_name"] = os.environ["SCHED_NAME"]
+        if os.environ.get("JOB_NAME"): fork["job_name"] = os.environ["JOB_NAME"]
+        if os.environ.get("RUN_TITLE"): fork["run_title"] = os.environ["RUN_TITLE"]
+
+        fork["first_jobs"] = [ fork["job_name"] ]
+        fork["final_jobs"] = [ fork["job_name"] ]
 
         return fork
 
