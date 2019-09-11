@@ -205,6 +205,11 @@ def execute_http_post(**kwargs):
         else:
             inputargs["data"] = json.dumps(data)
 
+    print 'making post on api_endpoint "{}"'.format(api_endpoint)
+    print 'making post on api_endpoint "{}"'.format(api_endpoint)
+    print 'making post on api_endpoint "{}"'.format(api_endpoint)
+    print 'making post on api_endpoint "{}"'.format(api_endpoint)
+
     req = requests.post(api_endpoint,**inputargs)
 
     status_code = int(req.status_code)
