@@ -442,6 +442,16 @@ class LocalDockerCI(object):
         while True:
 
             status,orders,loaded_yaml = self._run()
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print status
+            print status
+            print status
+            print status
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
             if status is None: 
                 sleep(1)
                 continue
