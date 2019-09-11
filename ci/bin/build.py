@@ -409,39 +409,39 @@ class LocalDockerCI(object):
     def _run(self):
 
         file_path = self._get_next_build()
-        if not file_path: return None,None
+        if not file_path: return None,None,None
 
         # Get new orders
         orders = []
 
         # load webhook
         status,loaded_yaml = self._load_webhook(orders,file_path)
-        if status == "failed": return status,orders
+        if status == "failed": return status,orders,loaded_yaml
 
         # clone code
         status = self._clone_code(orders,loaded_yaml)
-        if status == "failed": return status,orders
+        if status == "failed": return status,orders,loaded_yaml
 
         # test code if necessary
         if os.environ.get("DOCKER_FILE_TEST"):
             status = self._test_code(orders)
-            if status == "failed": return status,orders
+            if status == "failed": return status,orders,loaded_yaml
 
         # build code
         status = self._build_container(orders)
-        if status == "failed": return status,orders
+        if status == "failed": return status,orders,loaded_yaml
 
         # push container
         status = self._push_container(orders)
-        if status == "failed": return status,orders
+        if status == "failed": return status,orders,loaded_yaml
 
-        return "successful",orders
+        return "successful",orders,loaded_yaml
 
     def run(self):
 
         while True:
 
-            status,orders = self._run()
+            status,orders,loaded_yaml = self._run()
             if status is None: 
                 sleep(1)
                 continue
@@ -455,6 +455,7 @@ class LocalDockerCI(object):
 
             # Get new data
             data = self._get_new_data()
+            data["commit"] = loaded_yaml
             data = self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
