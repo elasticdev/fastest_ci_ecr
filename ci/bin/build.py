@@ -199,11 +199,7 @@ def execute_http_post(**kwargs):
     else:
         inputargs["verify"] = False
 
-    if data: 
-        if isinstance(data,str):
-            inputargs["data"] = data
-        else:
-            inputargs["data"] = json.dumps(data)
+    if data: inputargs["data"] = data
 
     print 'making post on'
     print 'api_endpoint "{}"'.format(api_endpoint)
@@ -230,12 +226,9 @@ def execute_http_post(**kwargs):
     if status_code > 399 and status_code < 600: 
         print "ERROR: Looks like the http post failed!"
         print ''
-        print ''
         print req
         print ''
         print ''
-        print ''
-        raise
         return False
 
     print "ERROR: Looks like the http post succeeded!"
@@ -428,6 +421,8 @@ class LocalDockerCI(object):
         data["total_time"] = int(data["stop_time"]) - int(data["start_time"])
         if orders: data["orders"] = orders
 
+        return data
+
     def _run(self):
 
         file_path = self._get_next_build()
@@ -465,10 +460,8 @@ class LocalDockerCI(object):
 
             status,orders = self._run()
             if status is None: 
-                print 'a'*32
                 sleep(1)
                 continue
-            print 'b'*32
             #try:
             #    status,orders = self._run()
             #    if status is None: raise
@@ -479,13 +472,13 @@ class LocalDockerCI(object):
 
             # Get new data
             data = self._get_new_data()
-            self._close_pipeline(status,data,orders)
+            data = self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
             inputargs["headers"] = {'content-type': 'application/json'}
             inputargs["headers"]["Token"] = self.token
             inputargs["api_endpoint"] = "https://{}/{}".format(self.queue_host,"api/v1.0/run")
-            inputargs["data"] = data
+            inputargs["data"] = json.dumps(data)
             execute_http_post(**inputargs)
             
             #print '*'*32
