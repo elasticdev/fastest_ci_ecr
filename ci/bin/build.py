@@ -471,14 +471,15 @@ class LocalDockerCI(object):
             inputargs["data"] = data
             execute_http_post(**inputargs)
             
-            print '*'*32
-            print '*'*32
+            #print '*'*32
+            #print '*'*32
+            print ''
             print 'Log for test and build'
             print ''
-            print_json(inputargs)
-            print ''
-            print '*'*32
-            print '*'*32
+            #print_json(inputargs)
+            #print ''
+            #print '*'*32
+            #print '*'*32
 
             sleep(1)
 
