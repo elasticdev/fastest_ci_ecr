@@ -352,6 +352,7 @@ class LocalDockerCI(object):
         inputargs["status"] = "in_progress"
 
         results = push_container()
+        if results.get("logs"): inputargs["log"] = results["logs"]
 
         if not results.get("status"):
             print "ERROR: push container failed"
@@ -419,6 +420,9 @@ class LocalDockerCI(object):
         while True:
 
             fork = self._run()
+            if not fork: 
+               sleep(1)
+               continue
             #try:
             #    fork = self._run()
             #except:
