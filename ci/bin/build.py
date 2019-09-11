@@ -431,9 +431,10 @@ class LocalDockerCI(object):
         status = self._build_container(orders)
         if status == "failed": return status,orders,loaded_yaml
 
-        # push container
-        status = self._push_container(orders)
-        if status == "failed": return status,orders,loaded_yaml
+        ## Testingyoyo
+        ## push container
+        #status = self._push_container(orders)
+        #if status == "failed": return status,orders,loaded_yaml
 
         return "successful",orders,loaded_yaml
 
