@@ -437,15 +437,13 @@ class LocalDockerCI(object):
 
         while True:
 
-            status,orders = self._run()
-            if status is None: 
+            try:
+                status,orders = self._run()
+                if status is None: raise
+            except:
+                print "ERROR: Something went wrong with testing and building the code"
                 sleep(1)
                 continue
-            #try:
-            #    orders = self._run()
-            #except:
-            #    print "ERROR: Something went wrong with testing and building the code"
-            #    continue
 
             #self.token = os.environ["HOST_TOKEN"]
             #self.queue_host = os.environ["QUEUE_HOST"]
