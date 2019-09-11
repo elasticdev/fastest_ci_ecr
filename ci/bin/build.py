@@ -214,6 +214,8 @@ def execute_http_post(**kwargs):
         print "ERROR: Looks like the http post failed!"
         return False
 
+    print "ERROR: Looks like the http post succeeded!"
+
     return True
 
 def get_queue_id(size=6,input_string=None):
