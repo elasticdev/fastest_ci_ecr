@@ -418,11 +418,12 @@ class LocalDockerCI(object):
 
         while True:
 
-            try:
-                fork = self._run()
-            except:
-                print "ERROR: Something went wrong with testing and building the code"
-                continue
+            fork = self._run()
+            #try:
+            #    fork = self._run()
+            #except:
+            #    print "ERROR: Something went wrong with testing and building the code"
+            #    continue
             
             print '*'*32
             print '*'*32
