@@ -200,10 +200,11 @@ def execute_http_post(**kwargs):
         inputargs["verify"] = False
 
     if data: 
-        if isinstance(data,str):
-            inputargs["data"] = data
-        else:
-            inputargs["data"] = json.dumps(data)
+        inputargs["data"] = data
+        #if isinstance(data,str):
+        #    inputargs["data"] = data
+        #else:
+        #    inputargs["data"] = json.dumps(data)
 
     print 'making post on'
     print 'api_endpoint "{}"'.format(api_endpoint)
