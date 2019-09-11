@@ -215,6 +215,12 @@ def execute_http_post(**kwargs):
     print ''
     print ''
     print 'verify "{}"'.format(verify)
+    print ''
+    print ''
+    print 'data "{}"'.format(inputargs["data"])
+    print ''
+    print ''
+    print ''
 
     req = requests.post(api_endpoint,**inputargs)
 
