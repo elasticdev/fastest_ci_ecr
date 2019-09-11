@@ -31,9 +31,9 @@ class FastestDockerCI(Resource):
   
         self.events = [ "push", "pull_request" ]
         self.build_queue_dir = os.environ.get("FASTEST_CI_QUEUE_DIR","/var/tmp/docker/fastest-ci/queue")
-        self.trigger_id = os.environ["TRIGGER_ID"]
-        self.trigger_branch = os.environ["TRIGGER_BRANCH"]
-        self.secret = os.environ["TRIGGER_SECRET"]
+        self.trigger_id = str(os.environ["TRIGGER_ID"])
+        self.trigger_branch = str(os.environ["TRIGGER_BRANCH"])
+        self.secret = str(os.environ["TRIGGER_SECRET"])
 
     def _get_github_ipblocks(self):
 
@@ -166,7 +166,7 @@ class FastestDockerCI(Resource):
         trigger_id = kwargs["trigger_id"]
 
         if str(trigger_id) != self.trigger_id:
-            return "trigger id doesn't match"
+            return "trigger id {} doesn't match expected {}".format(str(trigger_id),self.trigger_id)
 
         return True
 
@@ -176,7 +176,7 @@ class FastestDockerCI(Resource):
 
         if str(branch) == str(self.trigger_branch): return True
 
-        msg = "Trigger branch {} does not match branch to test and build on"
+        msg = "Trigger branch {} does not match branch {} to test and build on".format(str(branch),self.trigger_branch)
         return msg
 
     def post(self,**kwargs):
