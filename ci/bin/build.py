@@ -448,6 +448,13 @@ class LocalDockerCI(object):
             if status is None: 
                 sleep(1)
                 continue
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
             #try:
             #    status,orders = self._run()
             #    if status is None: raise
@@ -455,19 +462,6 @@ class LocalDockerCI(object):
             #    print "ERROR: Something went wrong with testing and building the code"
             #    sleep(1)
             #    continue
-
-            #self.token = os.environ["HOST_TOKEN"]
-            #self.queue_host = os.environ["QUEUE_HOST"]
-
-            #def execute_http_post(**kwargs):
-            #
-            #    headers = kwargs["headers"]
-            #    api_endpoint = kwargs["api_endpoint"]
-            #    data = kwargs.get("data")
-            #    verify = kwargs.get("verify")
-
-            #inputargs = {"verify":True}
-            #inputargs["api_endpoint"] = "https://{}/api/v1.0/orders/active".format(self.options["queue_host"])
 
             # Get new data
             data = self._get_new_data()
