@@ -215,7 +215,7 @@ def execute_http_post(**kwargs):
 def get_queue_id(size=6,input_string=None):
 
     date_epoch =str(int(time()))
-    queue_id = date_epoch+"_"+id_generator(size)
+    queue_id = "{}{}".format(date_epoch,id_generator(size))
 
     return queue_id
 
@@ -255,7 +255,7 @@ class LocalDockerCI(object):
 
     def _load_webhook(self,fork,file_path):
 
-        inputargs = {"start_time":int(time())}
+        inputargs = {"start_time":str(int(time()))}
         inputargs["human_description"] = "loading webhook information"
         inputargs["role"] = "github/webhook_read"
         inputargs["status"] = "in_progress"
@@ -286,7 +286,7 @@ class LocalDockerCI(object):
         os.environ["COMMIT_HASH"] = loaded_yaml["commit_hash"]
         os.environ["REPO_BRANCH"] = loaded_yaml.get("branch","master")
 
-        inputargs = {"start_time":int(time())}
+        inputargs = {"start_time":str(int(time()))}
         inputargs["human_description"] = "git pull of {} commit {}".format(loaded_yaml["repo_url"],loaded_yaml["commit_hash"])
         inputargs["role"] = "git/clone_code"
         inputargs["status"] = "in_progress"
@@ -305,7 +305,7 @@ class LocalDockerCI(object):
 
     def _test_code(self,fork):
 
-        inputargs = {"start_time":int(time())}
+        inputargs = {"start_time":str(int(time()))}
         inputargs["human_description"] = "test of coding with {}".format(os.environ["DOCKER_FILE_TEST"])
         inputargs["role"] = "docker/unit_test"
         inputargs["status"] = "in_progress"
@@ -324,7 +324,7 @@ class LocalDockerCI(object):
 
     def _build_container(self,fork):
 
-        inputargs = {"start_time":int(time())}
+        inputargs = {"start_time":str(int(time()))}
         inputargs["human_description"] = "building of container with {}".format(os.environ["DOCKER_FILE"])
         inputargs["role"] = "docker/build"
         inputargs["status"] = "in_progress"
@@ -346,7 +346,7 @@ class LocalDockerCI(object):
 
     def _push_container(self,fork):
 
-        inputargs = {"start_time":int(time())}
+        inputargs = {"start_time":str(int(time()))}
         inputargs["human_description"] = "pushing of container"
         inputargs["role"] = "docker/push"
         inputargs["status"] = "in_progress"
@@ -366,6 +366,7 @@ class LocalDockerCI(object):
     def _get_new_fork(self):
 
         fork = {"status":"running"}
+        fork["start_time"] = str(int(time()))
         fork["automation_phase"] = "continuous_delivery"
         fork["orders"] = []
         fork["job_name"] = "docker_ci"
@@ -384,6 +385,12 @@ class LocalDockerCI(object):
         fork["final_jobs"] = [ fork["job_name"] ]
 
         return fork
+
+    def _close_fork(self,fork):
+
+        fork["status"] = "successful"
+        fork["stop_time"] = str(int(time()))
+        fork["total_time"] = int(fork["stop_time"]) - int(fork["start_time"])
 
     def _run(self):
 
@@ -412,6 +419,9 @@ class LocalDockerCI(object):
 
         # push container
         self._push_container(fork)
+
+        # close fork
+        self._close_fork(fork)
 
         return fork
 
