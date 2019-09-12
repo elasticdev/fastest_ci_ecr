@@ -443,19 +443,11 @@ class LocalDockerCI(object):
         while True:
 
             status,orders,loaded_yaml = self._run()
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print status
-            print status
-            print status
-            print status
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
+
             if status is None: 
                 sleep(1)
                 continue
+
             #try:
             #    status,orders = self._run()
             #    if status is None: raise
@@ -467,6 +459,7 @@ class LocalDockerCI(object):
             # Get new data
             data = self._get_new_data()
             data["commit"] = loaded_yaml
+            data["publish_vars"] = loaded_yaml
             data = self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
@@ -475,17 +468,6 @@ class LocalDockerCI(object):
             inputargs["api_endpoint"] = "https://{}/{}".format(self.queue_host,"api/v1.0/run")
             inputargs["data"] = json.dumps(data)
             execute_http_post(**inputargs)
-            
-            #print '*'*32
-            #print '*'*32
-            #print ''
-            #print 'Log for test and build'
-            #print ''
-            #print_json(inputargs)
-            #print ''
-            #print '*'*32
-            #print '*'*32
-
             sleep(1)
 
 if __name__ == "__main__":
