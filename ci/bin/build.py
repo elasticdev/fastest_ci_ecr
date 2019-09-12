@@ -446,6 +446,9 @@ class LocalDockerCI(object):
 
         while True:
 
+            # Get new data
+            data = self._get_new_data()
+
             try:
                 status,orders,loaded_yaml = self._run()
                 if status is None: raise
@@ -453,8 +456,6 @@ class LocalDockerCI(object):
                 sleep(1)
                 continue
 
-            # Get new data
-            data = self._get_new_data()
             data["commit"] = loaded_yaml
 
             publish_vars = loaded_yaml.copy()
