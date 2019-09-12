@@ -98,7 +98,7 @@ def run_cmds(cmds):
     _logs = []
 
     for cmd in cmds:
-        _logs.append('** Executing "{}" **\n'.format(cmd))
+        _logs.append('-- Executing "{}" --\n'.format(cmd))
         result = run_cmd(cmd)
         if result.get("logs"): _logs.extend(result["logs"])
         if result.get("status") is True: continue
