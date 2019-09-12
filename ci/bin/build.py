@@ -207,6 +207,7 @@ def execute_http_post(**kwargs):
 
     #status code between 400 and 500 are failures.
     if status_code > 399 and status_code < 600: 
+        print ''
         print "ERROR: Looks like the http post failed!"
         print ''
         print req
@@ -431,10 +432,9 @@ class LocalDockerCI(object):
         status = self._build_container(orders)
         if status == "failed": return status,orders,loaded_yaml
 
-        ## Testingyoyo
-        ## push container
-        #status = self._push_container(orders)
-        #if status == "failed": return status,orders,loaded_yaml
+        # push container
+        status = self._push_container(orders)
+        if status == "failed": return status,orders,loaded_yaml
 
         return "successful",orders,loaded_yaml
 
@@ -442,19 +442,13 @@ class LocalDockerCI(object):
 
         while True:
 
-            status,orders,loaded_yaml = self._run()
-
-            if status is None: 
+            try:
+                status,orders,loaded_yaml = self._run()
+                if status is None: raise
+            except:
+                print "ERROR: Something went wrong with testing and building the code"
                 sleep(1)
                 continue
-
-            #try:
-            #    status,orders = self._run()
-            #    if status is None: raise
-            #except:
-            #    print "ERROR: Something went wrong with testing and building the code"
-            #    sleep(1)
-            #    continue
 
             # Get new data
             data = self._get_new_data()
@@ -477,5 +471,3 @@ class LocalDockerCI(object):
 if __name__ == "__main__":
     main = LocalDockerCI()
     main.run()
-
-#{'status': True, 'committer': 'Gary', 'compare': 'https://github.com/bill12252016/flask_sample/compare/ed510ec66c61...feff8b8a63a5', 'event_type': 'push', 'author': 'Gary', 'url': 'https://github.com/bill12252016/flask_sample/commit/feff8b8a63a5bb86f9c1ddeea259b33fd4bcb0e6', 'branch': 'master', 'commit_hash': 'feff8b8a63a5bb86f9c1ddeea259b33fd4bcb0e6', 'repo_url': 'https://github.com/bill12252016/flask_sample', 'committed_date': '2019-09-09T17:32:05+08:00', 'message': 'testing change new string MBpz6bF6', 'authored_date': '2019-09-09T17:32:05+08:00', 'email': 'gear@thytruth.com'}
