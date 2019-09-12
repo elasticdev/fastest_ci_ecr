@@ -461,7 +461,7 @@ class LocalDockerCI(object):
             data["commit"] = loaded_yaml
             publish_vars = loaded_yaml.copy()
 
-            for key,var in publish_vars: 
+            for key,var in publish_vars.iteritems(): 
                 if not var: del publish_vars[key]
 
             data["publish_vars"] = publish_vars
