@@ -215,7 +215,7 @@ def execute_http_post(**kwargs):
         print ''
         return False
 
-    print "ERROR: Looks like the http post succeeded!"
+    print "The http post succeeded!"
 
     return True
 
@@ -366,7 +366,10 @@ class LocalDockerCI(object):
         if results.get("logs"): inputargs["log"] = results["logs"]
 
         if not results.get("status"):
-            print "ERROR: push container failed"
+            print "ERROR: push container failed - Check ECR login expiration"
+            print ''
+            print results["logs"]
+            print ''
             inputargs["status"] = "failed"
         else:
             inputargs["status"] = "completed"
