@@ -460,15 +460,6 @@ class LocalDockerCI(object):
             if "status" in publish_vars: del publish_vars["status"]
             data["publish_vars"] = publish_vars
 
-            # Testingyoyo
-            print 'sdfdd'
-            print 'sdfdd'
-            print 'sdfdd'
-            print data["job_name"]
-            print 'sdfdd'
-            print 'sdfdd'
-            print 'sdfdd'
-
             data = self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
