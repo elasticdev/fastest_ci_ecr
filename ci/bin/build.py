@@ -446,7 +446,6 @@ class LocalDockerCI(object):
                 status,orders,loaded_yaml = self._run()
                 if status is None: raise
             except:
-                print "ERROR: Something went wrong with testing and building the code"
                 sleep(1)
                 continue
 
