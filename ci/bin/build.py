@@ -208,14 +208,14 @@ def execute_http_post(**kwargs):
     #status code between 400 and 500 are failures.
     if status_code > 399 and status_code < 600: 
         print ''
-        print "ERROR: Looks like the http post failed!"
+        print "ERROR: The callback http post for results failed!"
         print ''
         print req
         print ''
         print ''
         return False
 
-    print "The http post succeeded!"
+    print "The callback http post for results succeeded!"
 
     return True
 
