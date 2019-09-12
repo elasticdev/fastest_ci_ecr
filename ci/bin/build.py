@@ -459,12 +459,11 @@ class LocalDockerCI(object):
             # Get new data
             data = self._get_new_data()
             data["commit"] = loaded_yaml
+
             publish_vars = loaded_yaml.copy()
-
-            for key,var in publish_vars.iteritems(): 
-                if not var: del publish_vars[key]
-
+            if "status" in publish_vars: del publish_vars["status"]
             data["publish_vars"] = publish_vars
+
             data = self._close_pipeline(status,data,orders)
 
             inputargs = {"verify":False}
