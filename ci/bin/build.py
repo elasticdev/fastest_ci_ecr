@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+from timeout import timeout
 import datetime
 import yaml
 from time import sleep
@@ -91,6 +92,7 @@ def run_cmd(cmd):
 
     return results
 
+@timeout(int(os.environ["TIMEOUT"]))
 def run_cmds(cmds):
 
     status = True
@@ -130,6 +132,7 @@ def git_clone_repo():
     prv_key_loc = os.environ.get("REPO_KEY_LOC")
     commit = os.environ.get("COMMIT_HASH")
     branch = os.environ.get("REPO_BRANCH","master")
+    wrapper_script = create_git_ssh_wrapper()
 
     if not git_url:
         msg = "WARN: git_url not given, not cloning %s" % (repo_dir)
@@ -137,7 +140,6 @@ def git_clone_repo():
         return results
 
     if prv_key_loc:
-        wrapper_script = create_git_ssh_wrapper()
         base_cmd = "{} -i {}".format(wrapper_script,prv_key_loc)
         git_url = git_url.replace("https://github.com/","git@github.com:")
     else:
@@ -159,7 +161,15 @@ def git_clone_repo():
         add_cmd = "git checkout {}".format(commit)
         cmds.append("cd {}; {}".format(repo_dir,add_cmd))
 
-    return run_cmds(cmds)
+    os.environ["TIMEOUT"] = 30
+
+    try:
+        results = run_cmds(cmds)
+    except:
+        results = {"status":False}
+        results["log"] = "TIMED OUT cloning code"
+
+    return results
 
 def build_container(dockerfile="Dockerfile"):
 
@@ -170,7 +180,15 @@ def build_container(dockerfile="Dockerfile"):
     cmds.append("cd {}; docker build -t {}:{} . -f {}".format(repo_dir,repository_uri,tag,dockerfile))
     cmds.append("cd {}; docker build -t {}:latest . -f {}".format(repo_dir,repository_uri,dockerfile))
 
-    return run_cmds(cmds)
+    os.environ["TIMEOUT"] = os.environ.get("DOCKER_BUILD_TIMEOUT",1800)
+
+    try:
+        results = run_cmds(cmds)
+    except:
+        results = {"status":False}
+        results["log"] = "TIMED OUT building container"
+
+    return results
 
 def push_container():
 
@@ -183,7 +201,15 @@ def push_container():
     cmd = "docker push {}".format(repository_uri)
     cmds.append(cmd)
 
-    return run_cmds(cmds)
+    os.environ["TIMEOUT"] = 300
+
+    try:
+        results = run_cmds(cmds)
+    except:
+        results = {"status":False}
+        results["log"] = "TIMED OUT pushing container to registry"
+
+    return results
 
 def execute_http_post(**kwargs):
 
@@ -273,7 +299,7 @@ class LocalDockerCI(object):
         try:
             yaml_str = open(file_path,'r').read()
             loaded_yaml = dict(yaml.load(yaml_str))
-            inputargs["log"] = "payload from webhook loaded and read"
+            inputargs["log"] = "payload from github webhook loaded and read successfully"
             inputargs["status"] = "completed"
         except:
             loaded_yaml = None
@@ -407,7 +433,26 @@ class LocalDockerCI(object):
         data["status"] = status
         data["stop_time"] = str(int(time()))
         data["total_time"] = int(data["stop_time"]) - int(data["start_time"])
-        if orders: data["orders"] = orders
+
+        if not orders: return data
+
+        # place other fields orders
+
+        wt = 1
+        
+        for order in orders:
+            if os.environ.get("PROJECT_ID"): order["project_id"] = os.environ["PROJECT_ID"]
+            if os.environ.get("SCHEDULE_ID"): order["schedule_id"] = os.environ["SCHEDULE_ID"]
+            if os.environ.get("SCHED_TYPE"): order["sched_type"] = os.environ["SCHED_TYPE"]
+            if os.environ.get("SCHED_NAME"): order["sched_name"] = os.environ["SCHED_NAME"]
+            if os.environ.get("JOB_NAME"): order["job_name"] = os.environ["JOB_NAME"]
+            if os.environ.get("JOB_INSTANCE_ID"): order["job_instance_id"] = os.environ["JOB_INSTANCE_ID"]
+
+            order["automation_phase"] = "continuous_delivery"
+            order["wt"] = wt
+            wt += 1
+
+        data["orders"] = orders
 
         return data
 
