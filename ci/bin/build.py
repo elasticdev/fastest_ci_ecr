@@ -287,6 +287,13 @@ class LocalDockerCI(object):
         order["checkin"] = order["stop_time"]
         order["total_time"] = int(order["stop_time"]) - int(order["start_time"])
 
+        print '*'*32
+        print 'log **'
+        print '*'*32
+        print ''
+        print order["log"]
+        print ''
+
         return order
 
     def _load_webhook(self,orders,file_path):
