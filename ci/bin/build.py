@@ -261,7 +261,9 @@ class LocalDockerCI(object):
         self.token = os.environ["HOST_TOKEN"]
         self.queue_host = os.environ["QUEUE_HOST"]
 
-    def _clear_queue(self):
+    def clear_queue(self):
+
+        print "clearing queue {} on init".format(self.build_queue_dir)
         return os.system("rm -rf {}/*".format(self.build_queue_dir))
 
     def _get_next_build(self):
@@ -508,8 +510,6 @@ class LocalDockerCI(object):
 
     def run(self):
 
-        self._clear_queue()
-
         while True:
 
             # Get new data
@@ -542,4 +542,5 @@ class LocalDockerCI(object):
 
 if __name__ == "__main__":
     main = LocalDockerCI()
+    main.clear_queue()
     main.run()
