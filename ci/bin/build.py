@@ -395,7 +395,7 @@ class LocalDockerCI(object):
         if not results.get("status"):
             print "ERROR: push container failed - Check ECR login expiration"
             print ''
-            print results["logs"]
+            if results.get("logs"): print results["logs"]
             print ''
             inputargs["status"] = "failed"
         else:
