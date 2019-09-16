@@ -508,6 +508,8 @@ class LocalDockerCI(object):
                 sleep(1)
                 continue
 
+            print "The webhook info has been loaded. {}".format(loaded_yaml)
+
             data["commit"] = loaded_yaml
 
             publish_vars = loaded_yaml.copy()
