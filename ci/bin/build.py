@@ -498,6 +498,11 @@ class LocalDockerCI(object):
 
         while True:
 
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
+            print 'a'*32
             # Get new data
             data = self._get_new_data()
 
