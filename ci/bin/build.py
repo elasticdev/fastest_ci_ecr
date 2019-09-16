@@ -92,7 +92,7 @@ def run_cmd(cmd):
 
     return results
 
-@timeout(int(os.environ["TIMEOUT"]))
+@timeout(int(os.environ.get("TIMEOUT",3600)))
 def run_cmds(cmds):
 
     status = True
