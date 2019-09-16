@@ -161,7 +161,7 @@ def git_clone_repo():
         add_cmd = "git checkout {}".format(commit)
         cmds.append("cd {}; {}".format(repo_dir,add_cmd))
 
-    os.environ["TIMEOUT"] = 30
+    os.environ["TIMEOUT"] = "30"
 
     try:
         results = run_cmds(cmds)
@@ -180,7 +180,7 @@ def build_container(dockerfile="Dockerfile"):
     cmds.append("cd {}; docker build -t {}:{} . -f {}".format(repo_dir,repository_uri,tag,dockerfile))
     cmds.append("cd {}; docker build -t {}:latest . -f {}".format(repo_dir,repository_uri,dockerfile))
 
-    os.environ["TIMEOUT"] = os.environ.get("DOCKER_BUILD_TIMEOUT",1800)
+    os.environ["TIMEOUT"] = str(os.environ.get("DOCKER_BUILD_TIMEOUT",1800))
 
     try:
         results = run_cmds(cmds)
@@ -201,7 +201,7 @@ def push_container():
     cmd = "docker push {}".format(repository_uri)
     cmds.append(cmd)
 
-    os.environ["TIMEOUT"] = 300
+    os.environ["TIMEOUT"] = "300"
 
     try:
         results = run_cmds(cmds)
