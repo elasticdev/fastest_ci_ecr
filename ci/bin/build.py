@@ -419,7 +419,7 @@ class LocalDockerCI(object):
 
         orders.append(self._get_order(**inputargs))
 
-        return inputargs["status"]
+        return inputargs
 
     def _get_new_data(self):
 
