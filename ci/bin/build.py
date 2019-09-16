@@ -261,6 +261,9 @@ class LocalDockerCI(object):
         self.token = os.environ["HOST_TOKEN"]
         self.queue_host = os.environ["QUEUE_HOST"]
 
+    def _clear_queue(self):
+        return os.system("rm -rf {}/*".format(self.build_queue_dir))
+
     def _get_next_build(self):
 
         filenames = sorted(os.listdir(self.build_queue_dir))
@@ -504,6 +507,8 @@ class LocalDockerCI(object):
         return "successful",orders,loaded_yaml
 
     def run(self):
+
+        self._clear_queue()
 
         while True:
 
