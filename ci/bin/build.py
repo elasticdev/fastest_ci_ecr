@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
+#import sys
 import os
-import sys
 import json
 from timeout import timeout
 import datetime
