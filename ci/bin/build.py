@@ -506,13 +506,17 @@ class LocalDockerCI(object):
             # Get new data
             data = self._get_new_data()
 
-            try:
-                status,orders,loaded_yaml = self._run()
-                if status is None: raise
-            except:
+            status,orders,loaded_yaml = self._run()
+
+            if status is None: 
                 sleep(1)
                 continue
 
+            print 'b'*32
+            print 'b'*32
+            print status
+            print 'b'*32
+            print 'b'*32
             print "The webhook info has been loaded. {}".format(loaded_yaml)
 
             data["commit"] = loaded_yaml
