@@ -92,7 +92,7 @@ def run_cmd(cmd):
 
     return results
 
-@timeout(int(os.environ.get("TIMEOUT",3)))
+@timeout(int(os.environ.get("TIMEOUT",1800)))
 def run_cmds(cmds):
 
     status = True
@@ -299,19 +299,20 @@ class LocalDockerCI(object):
         try:
             yaml_str = open(file_path,'r').read()
             loaded_yaml = dict(yaml.load(yaml_str))
-            inputargs["log"] = "payload from github webhook loaded and read successfully"
+            msg = "payload from github webhook loaded and read successfully"
             inputargs["status"] = "completed"
         except:
             loaded_yaml = None
             msg = "ERROR: could not load yaml at {} - skipping build".format(file_path)
-            print msg
-            inputargs["log"] = msg
             inputargs["status"] = "failed"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
 
         os.system("rm -rf {}".format(file_path))
         orders.append(self._get_order(**inputargs))
 
-        return inputargs["status"],loaded_yaml
+        return inputargs,loaded_yaml
 
     def _clone_code(self,orders,loaded_yaml):
 
@@ -327,17 +328,23 @@ class LocalDockerCI(object):
         inputargs["status"] = "in_progress"
 
         results = git_clone_repo()
-        if results.get("logs"): inputargs["log"] = results["logs"]
+
+        if results.get("logs"): 
+            inputargs["log"] = results["logs"]
 
         if results.get("status") is False: 
-            print "ERROR: cloning code failed"
+            msg = "ERROR: cloning code failed"
             inputargs["status"] = "failed"
         else:
+            msg = "cloning code succeeded"
             inputargs["status"] = "completed"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
 
         orders.append(self._get_order(**inputargs))
 
-        return inputargs["status"]
+        return inputargs
 
     def _test_code(self,orders):
 
@@ -350,14 +357,18 @@ class LocalDockerCI(object):
         if results.get("logs"): inputargs["log"] = results["logs"]
 
         if results.get("status") is False: 
-            print "ERROR: testing of code failed"
+            msg = "ERROR: testing of code failed"
             inputargs["status"] = "failed"
         else:
+            msg = "testing of code succeeded"
             inputargs["status"] = "completed"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
 
         orders.append(self._get_order(**inputargs))
 
-        return inputargs["status"]
+        return inputargs
 
     def _build_container(self,orders):
 
@@ -373,14 +384,18 @@ class LocalDockerCI(object):
         if results.get("logs"): inputargs["log"] = results["logs"]
 
         if not results.get("status"):
-            print "ERROR: build container failed"
             inputargs["status"] = "failed"
+            msg = "building of container failed"
         else:
             inputargs["status"] = "completed"
+            msg = "building of container succeeded"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
 
         orders.append(self._get_order(**inputargs))
 
-        return inputargs["status"]
+        return inputargs
 
     def _push_container(self,orders):
 
@@ -393,13 +408,14 @@ class LocalDockerCI(object):
         if results.get("logs"): inputargs["log"] = results["logs"]
 
         if not results.get("status"):
-            print "ERROR: push container failed - Check ECR login expiration"
-            print ''
-            if results.get("logs"): print results["logs"]
-            print ''
+            msg = "pushing of container failed"
             inputargs["status"] = "failed"
         else:
+            msg = "pushing of container succeeded"
             inputargs["status"] = "completed"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
 
         orders.append(self._get_order(**inputargs))
 
@@ -465,25 +481,25 @@ class LocalDockerCI(object):
         orders = []
 
         # load webhook
-        status,loaded_yaml = self._load_webhook(orders,file_path)
-        if status == "failed": return status,orders,loaded_yaml
+        wresults,loaded_yaml = self._load_webhook(orders,file_path)
+        if wresults.get("status") == "failed": return wresults["status"],orders,loaded_yaml
 
         # clone code
-        status = self._clone_code(orders,loaded_yaml)
-        if status == "failed": return status,orders,loaded_yaml
+        cresults = self._clone_code(orders,loaded_yaml)
+        if cresults.get("status") == "failed": return cresults.get("status"),orders,loaded_yaml
 
         # test code if necessary
         if os.environ.get("DOCKER_FILE_TEST"):
-            status = self._test_code(orders)
-            if status == "failed": return status,orders,loaded_yaml
+            tresults = self._test_code(orders)
+            if tresults.get("status") == "failed": return tresults.get("status"),orders,loaded_yaml
 
         # build code
-        status = self._build_container(orders)
-        if status == "failed": return status,orders,loaded_yaml
+        bresults = self._build_container(orders)
+        if bresults.get("status") == "failed": return bresults.get("status"),orders,loaded_yaml
 
         # push container
-        status = self._push_container(orders)
-        if status == "failed": return status,orders,loaded_yaml
+        presults = self._push_container(orders)
+        if presults.get("status") == "failed": return presults.get("status"),orders,loaded_yaml
 
         return "successful",orders,loaded_yaml
 
@@ -501,7 +517,7 @@ class LocalDockerCI(object):
                 sleep(1)
                 continue
 
-            print "The webhook info has been loaded. {}".format(loaded_yaml)
+            print "The webhook info has been loaded and processed. \n{}".format(loaded_yaml)
 
             data["commit"] = loaded_yaml
 
