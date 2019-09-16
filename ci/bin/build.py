@@ -195,10 +195,10 @@ def push_container():
     repository_uri = os.environ["REPOSITORY_URI"]
     ecr_login = os.environ["ECR_LOGIN"]
     tag = os.environ["COMMIT_HASH"][0:6]
-    print "Pushing latest image to repository {}, tag = {}".format(repository_uri,tag)
+    print "Pushing image to repository {}, tag = {}".format(repository_uri,tag)
     cmds = []
     cmds.append(ecr_login)
-    cmd = "docker push {}".format(repository_uri)
+    cmd = "docker push {}:{}".format(repository_uri,tag)
     cmds.append(cmd)
 
     os.environ["TIMEOUT"] = "300"
