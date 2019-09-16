@@ -280,12 +280,12 @@ class LocalDockerCI(object):
         order["human_description"] = kwargs["human_description"]
         order["role"] = kwargs["role"]
 
-        order["log"] = kwargs["log"]
         order["start_time"] = kwargs["start_time"]
         order["status"] = kwargs["status"]
         order["stop_time"] = str(int(time()))
         order["checkin"] = order["stop_time"]
         order["total_time"] = int(order["stop_time"]) - int(order["start_time"])
+        if kwargs.get("log"): order["log"] = kwargs["log"]
 
         return order
 
