@@ -287,13 +287,6 @@ class LocalDockerCI(object):
         order["checkin"] = order["stop_time"]
         order["total_time"] = int(order["stop_time"]) - int(order["start_time"])
 
-        print '*'*32
-        print 'log **'
-        print '*'*32
-        print ''
-        print order["log"]
-        print ''
-
         return order
 
     def _load_webhook(self,orders,file_path):
@@ -498,25 +491,16 @@ class LocalDockerCI(object):
 
         while True:
 
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
             # Get new data
             data = self._get_new_data()
 
             status,orders,loaded_yaml = self._run()
 
             if status is None: 
+                #print "Not new yml files to load"
                 sleep(1)
                 continue
 
-            print 'b'*32
-            print 'b'*32
-            print status
-            print 'b'*32
-            print 'b'*32
             print "The webhook info has been loaded. {}".format(loaded_yaml)
 
             data["commit"] = loaded_yaml
