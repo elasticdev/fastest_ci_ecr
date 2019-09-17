@@ -208,7 +208,7 @@ def scan_image():
 
     #if is_tool("trivy"): trivy_exists = True
 
-    if not trivy_exists and os.exists("/usr/local/bin/trivy"): 
+    if not trivy_exists and os.path.exists("/usr/local/bin/trivy"): 
         trivy_exists = True
 
     if not trivy_exists:
