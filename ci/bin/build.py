@@ -97,7 +97,7 @@ def run_cmd(cmd):
     else:
         results = {"status":False}
 
-    results["logs"] = [line.rstrip('\n') for line in open(log_file,"r")]
+    results["log"] = [line.rstrip('\n') for line in open(log_file,"r")]
 
     os.system("rm -rf {}".format(log_file))
 
@@ -108,20 +108,20 @@ def run_cmds(cmds):
 
     status = True
 
-    _logs = []
+    _log = []
 
     for cmd in cmds:
-        _logs.append('-- Executing "{}" --\n'.format(cmd))
+        _log.append('-- Executing "{}" --\n'.format(cmd))
         result = run_cmd(cmd)
-        if result.get("logs"): _logs.extend(result["logs"])
+        if result.get("log"): _log.extend(result["log"])
         if result.get("status") is True: continue
         status = False
         break
 
-    logs = '\n'.join(_logs)
+    log = '\n'.join(_log)
 
     results = {"status":status}
-    results["logs"] = logs
+    results["log"] = log
 
     return results
 
@@ -151,7 +151,7 @@ def git_clone_repo():
 
     if not git_url:
         msg = "WARN: git_url not given, not cloning %s" % (repo_dir)
-        results = {"logs":msg,"status":False}
+        results = {"log":msg,"status":False}
         return results
 
     if prv_key_loc:
@@ -215,10 +215,6 @@ def scan_image():
         msg = "ERROR: Could not retrieve trivy to scan the image"
         results = {"status":False}
         results["log"] = msg
-        print 'f'*32
-        print 'f'*32
-        print 'f'*32
-        print 'f'*32
         return results
 
     os.environ["TIMEOUT"] = "1800"
@@ -234,18 +230,6 @@ def scan_image():
     except:
         results = {"status":False}
         results["log"] = "TIMED OUT scanning {}".format(fqn_image)
-
-    print 'a'*32
-    print 'a'*32
-    print cmds
-    print cmds
-    print cmds
-    print 'a'*32
-    print 'a'*32
-    print results
-    print 'b'*32
-    print 'b'*32
-    print 'b'*32
 
     return results
 
@@ -364,7 +348,7 @@ class LocalDockerCI(object):
             inputargs["status"] = "failed"
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         os.system("rm -rf {}".format(file_path))
         orders.append(self._get_order(**inputargs))
@@ -386,8 +370,8 @@ class LocalDockerCI(object):
 
         results = git_clone_repo()
 
-        if results.get("logs"): 
-            inputargs["log"] = results["logs"]
+        if results.get("log"): 
+            inputargs["log"] = results["log"]
 
         if results.get("status") is False: 
             msg = "ERROR: cloning code failed"
@@ -397,7 +381,7 @@ class LocalDockerCI(object):
             inputargs["status"] = "completed"
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         orders.append(self._get_order(**inputargs))
 
@@ -411,7 +395,7 @@ class LocalDockerCI(object):
         inputargs["status"] = "in_progress"
         # REPOSITORY_URI This needs to be set for builds
         results = build_container(os.environ["DOCKER_FILE_TEST"])
-        if results.get("logs"): inputargs["log"] = results["logs"]
+        if results.get("log"): inputargs["log"] = results["log"]
 
         if results.get("status") is False: 
             msg = "ERROR: testing of code failed"
@@ -421,7 +405,7 @@ class LocalDockerCI(object):
             inputargs["status"] = "completed"
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         orders.append(self._get_order(**inputargs))
 
@@ -438,7 +422,7 @@ class LocalDockerCI(object):
         dockerfile = os.environ.get("DOCKER_FILE")
         if not dockerfile: dockerfile = "Dockerfile"
         results = build_container(dockerfile)
-        if results.get("logs"): inputargs["log"] = results["logs"]
+        if results.get("log"): inputargs["log"] = results["log"]
 
         if not results.get("status"):
             inputargs["status"] = "failed"
@@ -448,7 +432,7 @@ class LocalDockerCI(object):
             msg = "building of container succeeded"
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         orders.append(self._get_order(**inputargs))
 
@@ -462,7 +446,7 @@ class LocalDockerCI(object):
         inputargs["status"] = "in_progress"
 
         results = push_container()
-        if results.get("logs"): inputargs["log"] = results["logs"]
+        if results.get("log"): inputargs["log"] = results["log"]
 
         if not results.get("status"):
             msg = "pushing of container failed"
@@ -472,7 +456,7 @@ class LocalDockerCI(object):
             inputargs["status"] = "completed"
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         orders.append(self._get_order(**inputargs))
 
@@ -486,7 +470,7 @@ class LocalDockerCI(object):
         inputargs["status"] = "in_progress"
 
         results = scan_image()
-        if results.get("logs"): inputargs["log"] = results["logs"]
+        if results.get("log"): inputargs["log"] = results["log"]
 
         if not results.get("status"):
             msg = "scanning of image failed"
@@ -502,7 +486,7 @@ class LocalDockerCI(object):
         print 'g'*32
 
         if not inputargs.get("log"): inputargs["log"] = msg
-        print inputargs.get("logs")
+        print inputargs.get("log")
 
         orders.append(self._get_order(**inputargs))
 
