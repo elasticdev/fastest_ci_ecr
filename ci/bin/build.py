@@ -567,11 +567,15 @@ class LocalDockerCI(object):
         if presults.get("status") == "failed": return presults.get("status"),orders,loaded_yaml
 
         # scan image
-        enable_scan_file = "scan_docker_image"
+        enable_scan_file = "{}/{}".format(os.environ["DOCKER_BUILD_DIR"],"scan_docker_image")
         print 'a'*32
         print 'a'*32
         print 'a'*32
         print 'a'*32
+        print os.path.chdir()
+        print os.path.chdir()
+        print os.path.chdir()
+        print os.path.chdir()
         print os.path.exists(enable_scan_file)
         print os.path.exists(enable_scan_file)
         print os.path.exists(enable_scan_file)
