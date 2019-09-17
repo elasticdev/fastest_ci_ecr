@@ -568,6 +568,12 @@ class LocalDockerCI(object):
 
         # scan image
         enable_scan_file = "scan_docker_image"
+        print os.path.exists(enable_scan_file)
+        print os.path.exists(enable_scan_file)
+        print os.path.exists(enable_scan_file)
+        print os.path.exists(enable_scan_file)
+        print os.path.exists(enable_scan_file)
+        print os.path.exists(enable_scan_file)
         if os.path.exists(enable_scan_file):
             sresults = self._scan_image(orders)
             if sresults.get("status") == "failed": return sresults.get("status"),orders,loaded_yaml
