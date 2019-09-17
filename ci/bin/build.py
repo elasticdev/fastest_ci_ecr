@@ -231,6 +231,18 @@ def scan_image():
         results = {"status":False}
         results["log"] = "TIMED OUT scanning {}".format(fqn_image)
 
+    print 'a'*32
+    print 'a'*32
+    print cmds
+    print cmds
+    print cmds
+    print 'a'*32
+    print 'a'*32
+    print results
+    print 'b'*32
+    print 'b'*32
+    print 'b'*32
+
     return results
 
 def push_container():
@@ -570,13 +582,6 @@ class LocalDockerCI(object):
         enable_scan_file = "{}/{}".format(os.environ["DOCKER_BUILD_DIR"],"scan_docker_image")
         if os.path.exists(enable_scan_file):
             sresults = self._scan_image(orders)
-            print 'a'*32
-            print 'a'*32
-            print 'a'*32
-            print sresults
-            print 'b'*32
-            print 'b'*32
-            print 'b'*32
             if sresults.get("status") == "failed": return sresults.get("status"),orders,loaded_yaml
 
         return "successful",orders,loaded_yaml
