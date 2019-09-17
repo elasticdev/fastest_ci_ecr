@@ -131,7 +131,11 @@ def git_clone_repo():
     git_url = os.environ.get("REPO_URL")
     prv_key_loc = os.environ.get("REPO_KEY_LOC")
     commit = os.environ.get("COMMIT_HASH")
-    branch = os.environ.get("REPO_BRANCH","master")
+
+    branch = os.environ.get("REPO_BRANCH")
+    if not branch: branch = os.environ.get("TRIGGER_BRANCH")
+    if not branch: branch = "master"
+
     wrapper_script = create_git_ssh_wrapper()
 
     if not git_url:
