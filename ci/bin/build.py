@@ -479,12 +479,6 @@ class LocalDockerCI(object):
             msg = "scanning of image succeeded"
             inputargs["status"] = "completed"
 
-        print 'g'*32
-        print 'g'*32
-        print inputargs
-        print 'g'*32
-        print 'g'*32
-
         if not inputargs.get("log"): inputargs["log"] = msg
         print inputargs.get("log")
 
