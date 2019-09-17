@@ -215,6 +215,10 @@ def scan_image():
         msg = "ERROR: Could not retrieve trivy to scan the image"
         results = {"status":False}
         results["log"] = msg
+        print 'f'*32
+        print 'f'*32
+        print 'f'*32
+        print 'f'*32
         return results
 
     os.environ["TIMEOUT"] = "1800"
