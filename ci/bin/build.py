@@ -14,6 +14,7 @@ from subprocess import STDOUT
 import string
 import random
 import requests
+from shutil import which
 
 class DateTimeJsonEncoder(json.JSONEncoder):
 
@@ -56,6 +57,16 @@ git "$@"
     os.system("chmod 755 %s" % filename)
 
     return filename
+
+def get_queue_id(size=6,input_string=None):
+
+    date_epoch =str(int(time()))
+    queue_id = "{}{}".format(date_epoch,id_generator(size))
+
+    return queue_id
+
+def is_tool(name):
+    return which(name) is not None
 
 def execute_cmd(cmd):
   
@@ -191,6 +202,37 @@ def build_container(dockerfile="Dockerfile"):
 
     return results
 
+def scan_image(self):
+
+    trivy_exists = None
+
+    if is_tool("trivy"): trivy_exists = True
+
+    if not trivy_exists and os.exists("/usr/local/bin/trivy"): 
+        trivy_exists = True
+
+    if not trivy_exists:
+        msg = "ERROR: Could not retrieve trivy to scan the image"
+        results = {"status":False}
+        results["log"] = msg
+        return results
+
+    os.environ["TIMEOUT"] = "1800"
+
+    repository_uri = os.environ["REPOSITORY_URI"]
+    tag = os.environ["COMMIT_HASH"][0:6]
+    fqn_image = "{}:{}".format(repository_uri,tag)
+
+    cmds = [ "trivy {}".format(fqn_image) ]
+
+    try:
+        results = run_cmds(cmds)
+    except:
+        results = {"status":False}
+        results["log"] = "TIMED OUT scanning {}".format(fqn_image)
+
+    return results
+
 def push_container():
 
     repository_uri = os.environ["REPOSITORY_URI"]
@@ -246,13 +288,6 @@ def execute_http_post(**kwargs):
     print "The callback http post for results succeeded!"
 
     return True
-
-def get_queue_id(size=6,input_string=None):
-
-    date_epoch =str(int(time()))
-    queue_id = "{}{}".format(date_epoch,id_generator(size))
-
-    return queue_id
 
 class LocalDockerCI(object):
 
@@ -427,6 +462,30 @@ class LocalDockerCI(object):
 
         return inputargs
 
+    def _scan_image(self,orders):
+
+        inputargs = {"start_time":str(int(time()))}
+        inputargs["human_description"] = "scanning of image"
+        inputargs["role"] = "security/scan"
+        inputargs["status"] = "in_progress"
+
+        results = scan_image()
+        if results.get("logs"): inputargs["log"] = results["logs"]
+
+        if not results.get("status"):
+            msg = "scanning of image failed"
+            inputargs["status"] = "failed"
+        else:
+            msg = "scanning of image succeeded"
+            inputargs["status"] = "completed"
+
+        if not inputargs.get("log"): inputargs["log"] = msg
+        print inputargs.get("logs")
+
+        orders.append(self._get_order(**inputargs))
+
+        return inputargs
+
     def _get_new_data(self):
 
         values = {"status":"running"}
@@ -495,7 +554,7 @@ class LocalDockerCI(object):
         if cresults.get("status") == "failed": return cresults.get("status"),orders,loaded_yaml
 
         # test code if necessary
-        if os.environ.get("DOCKER_FILE_TEST"):
+        if os.environ.get("DOCKER_FILE_TEST") and os.path.exists(os.environ["DOCKER_FILE_TEST"]):
             tresults = self._test_code(orders)
             if tresults.get("status") == "failed": return tresults.get("status"),orders,loaded_yaml
 
@@ -506,6 +565,12 @@ class LocalDockerCI(object):
         # push container
         presults = self._push_container(orders)
         if presults.get("status") == "failed": return presults.get("status"),orders,loaded_yaml
+
+        # scan image
+        enable_scan_file = "scan_docker_image"
+        if os.path.exists(enable_scan_file):
+            sresults = self._scan_image(orders)
+            if sresults.get("status") == "failed": return sresults.get("status"),orders,loaded_yaml
 
         return "successful",orders,loaded_yaml
 
