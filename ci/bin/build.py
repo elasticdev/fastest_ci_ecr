@@ -572,10 +572,6 @@ class LocalDockerCI(object):
         print 'a'*32
         print 'a'*32
         print 'a'*32
-        print os.path.chdir()
-        print os.path.chdir()
-        print os.path.chdir()
-        print os.path.chdir()
         print os.path.exists(enable_scan_file)
         print os.path.exists(enable_scan_file)
         print os.path.exists(enable_scan_file)
