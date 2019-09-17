@@ -160,7 +160,8 @@ def git_clone_repo():
     else:
         base_cmd = None
 
-    cmds = []
+    cmds = [ 'git config --global user.email "automatic@example.com"' ]
+    cmds.append('git config --global user.name "Auto Pull"')
 
     add_cmd = "git pull origin {}".format(branch)
 
