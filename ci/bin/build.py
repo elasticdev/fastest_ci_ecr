@@ -202,7 +202,7 @@ def build_container(dockerfile="Dockerfile"):
 
     return results
 
-def scan_image(self):
+def scan_image():
 
     trivy_exists = None
 
