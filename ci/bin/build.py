@@ -147,10 +147,7 @@ def git_clone_repo():
 
     cmds = []
 
-    _branch = "master"
-    if not branch: _branch = branch
-
-    add_cmd = "git pull origin {}".format(_branch)
+    add_cmd = "git pull origin {}".format(branch)
 
     if base_cmd:
         cmds.append("cd {}; {} {}".format(repo_dir,base_cmd,add_cmd))
