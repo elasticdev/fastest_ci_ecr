@@ -14,7 +14,7 @@ from subprocess import STDOUT
 import string
 import random
 import requests
-from shutil import which
+#from shutil import which
 
 class DateTimeJsonEncoder(json.JSONEncoder):
 
@@ -65,8 +65,8 @@ def get_queue_id(size=6,input_string=None):
 
     return queue_id
 
-def is_tool(name):
-    return which(name) is not None
+#def is_tool(name):
+#    return which(name) is not None
 
 def execute_cmd(cmd):
   
@@ -206,7 +206,7 @@ def scan_image(self):
 
     trivy_exists = None
 
-    if is_tool("trivy"): trivy_exists = True
+    #if is_tool("trivy"): trivy_exists = True
 
     if not trivy_exists and os.exists("/usr/local/bin/trivy"): 
         trivy_exists = True
