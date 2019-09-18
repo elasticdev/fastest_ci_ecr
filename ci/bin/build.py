@@ -160,8 +160,9 @@ def git_clone_repo():
     else:
         base_cmd = None
 
-    cmds = [ 'git config --global user.email "automatic@example.com"' ]
-    cmds.append('git config --global user.name "Auto Pull"')
+    cmds = [ 'git config --global user.email "automation@elasticdev.io"' ]
+    cmds.append('git config --global user.name "ElasticDev"')
+    cmds.append("git checkout {}".format(branch))
 
     add_cmd = "git pull origin {}".format(branch)
 
@@ -568,7 +569,7 @@ class LocalDockerCI(object):
         if presults.get("status") == "failed": return presults.get("status"),orders,loaded_yaml
 
         # scan image
-        enable_scan_file = "{}/{}".format(os.environ["DOCKER_BUILD_DIR"],"scan_docker_image")
+        enable_scan_file = "{}/{}/{}".format(os.environ["DOCKER_BUILD_DIR"],"elasticdev","security_scan")
         if os.path.exists(enable_scan_file):
             sresults = self._scan_image(orders)
             if sresults.get("status") == "failed": return sresults.get("status"),orders,loaded_yaml
