@@ -7,7 +7,9 @@ COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip 
 RUN pip install -r requirements.txt
 COPY install_trivy_ubuntu.sh /opt/
+COPY install-edreporterhelper.sh /opt/
 RUN chmod 755 /opt/install_trivy_ubuntu.sh && /opt/install_trivy_ubuntu.sh 
+RUN chmod 755 /opt/install-edreporterhelper.sh && /opt/install-edreporterhelper.sh
 COPY bin /opt/
 
 #FROM python:3.6-alpine
