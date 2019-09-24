@@ -8,7 +8,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY install_trivy_ubuntu.sh /opt/
 COPY install-edreporterhelper.sh /opt/
-RUN chmod 755 /opt/install_trivy_ubuntu.sh && RUN chmod 755 /opt/install-edreporterhelper.sh 
+RUN chmod 755 /opt/install_trivy_ubuntu.sh && chmod 755 /opt/install-edreporterhelper.sh 
 RUN /opt/install_trivy_ubuntu.sh 
 RUN /opt/install-edreporterhelper.sh
 COPY bin /opt/
