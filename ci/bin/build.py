@@ -348,7 +348,8 @@ class LocalDockerCI(object):
         if cresults.get("status") == "failed": return cresults.get("status"),orders,loaded_yaml
 
         # test code if necessary
-        if os.environ.get("DOCKER_FILE_TEST") and os.path.exists(os.environ["DOCKER_FILE_TEST"]):
+        if os.environ.get("DOCKER_FILE_TEST") and os.path.exists("{}/{}".format(os.environ["DOCKER_BUILD_DIR"],os.environ["DOCKER_FILE_TEST"])):
+            print 'executing Docker test with {}'.format(os.environ["DOCKER_FILE_TEST"])
             tresults = self._test_code(orders)
             if tresults.get("status") == "failed": return tresults.get("status"),orders,loaded_yaml
 
