@@ -93,12 +93,15 @@ class WebhookProcess(object):
 
         return status,results
 
-    def _get_hook_blocks(self,**kwargs):
+    def _get_hook_blocks_by_headers(self,**kwargs):
 
-        provider,provider_id = kwargs["user"].replace("|","_").split("_")
+        provider = "github"
 
-        if provider == "github": return self._get_github_hook_blocks()
-        if provider == "bitbucket": return self._get_bitbucket_hook_blocks()
+        user_agent = str(request.headers.get('User-Agent')).lower()
+        if "bitbucket" in user_agent: 
+            return self._get_bitbucket_hook_blocks()
+
+        return self._get_github_hook_blocks()
 
     def _check_src_ip(self,**kwargs):
 
@@ -106,7 +109,7 @@ class WebhookProcess(object):
         if os.environ.get('GHE_ADDRESS'):
             hook_blocks = [unicode(os.environ.get('GHE_ADDRESS'))]
         else:
-            status,hook_blocks = self._get_hook_blocks(**kwargs)
+            status,hook_blocks = self._get_hook_blocks_by_headers(**kwargs)
             if status is False: return "could not determine src ip acceptable ipaddresses"
 
         if len(request.access_route) > 1:
