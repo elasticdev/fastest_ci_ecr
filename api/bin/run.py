@@ -113,7 +113,7 @@ class WebhookProcess(object):
             hook_blocks = [unicode(os.environ.get('GHE_ADDRESS'))]
         else:
             provider,status,hook_blocks = self._get_hook_blocks_by_headers(**kwargs)
-            if status is False: return "could not determine src ip acceptable {} ipaddresses".format(provider)
+            if status is False: return 'could not determine src ip acceptable "{}" ipaddresses'.format(provider)
 
         if len(request.access_route) > 1:
             remote_ip = request.access_route[-1]
@@ -124,7 +124,7 @@ class WebhookProcess(object):
 
         for block in hook_blocks:
             if ipaddress.ip_address(request_ip) in ipaddress.ip_network(block):
-                print "request_ip = {} is in the list of acceptable {} ipaddresses".format(request_ip,provider)
+                print 'request_ip = {} is in the list of acceptable "{}" ipaddresses'.format(request_ip,provider)
                 return True
 
         msg = "{} is not in list of accepted src ipaddresses".format(request_ip)
