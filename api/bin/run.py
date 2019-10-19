@@ -352,7 +352,8 @@ class FastestDockerCI(WebhookProcess,Resource):
         self.secret = os.environ.get("TRIGGER_SECRET")
         if self.secret: self.secret = str(self.secret)
 
-        WebhookProcess.__init__()
+        WebhookProcess.__init__(self)
+
 api.add_resource(FastestDockerCI, '/<string:trigger_id>')
 
 if __name__ == "__main__":
