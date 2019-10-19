@@ -96,10 +96,15 @@ class WebhookProcess(object):
     def _get_hook_blocks_by_headers(self,**kwargs):
 
         user_agent = str(request.headers.get('User-Agent')).lower()
-        if "bitbucket" in user_agent: 
-            return "bitbucket",self._get_bitbucket_hook_blocks()
 
-        return "github",self._get_github_hook_blocks()
+        if "bitbucket" in user_agent: 
+            status,results = self._get_bitbucket_hook_blocks()
+            provider = "bitbucket"
+        else:
+            status,results = self._get_github_hook_blocks()
+            provider = "github"
+
+        return provider,status,results
 
     def _check_src_ip(self,**kwargs):
 
