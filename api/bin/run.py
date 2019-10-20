@@ -205,6 +205,13 @@ class WebhookProcess(object):
             source_hash = pullrequest["source"]["commit"]["hash"]
             dest_hash = pullrequest["destination"]["commit"]["hash"]
 
+            # Branch to commit pull request to
+            dest_branch = pullrequest["destination"]["branch"]["name"]
+            src_branch = pullrequest["source"]["branch"]["name"]
+  
+            results["branch"] = dest_branch
+            results["src_branch"] = src_branch
+
             commit_hash = source_hash
             results["message"] = pullrequest["title"]
             results["author"] = pullrequest["author"]["display_name"]
@@ -262,6 +269,12 @@ class WebhookProcess(object):
             results["committer"] = None
             results["committed_date"] = None
             results["updated_at"] = payload["pull_request"]["updated_at"]
+
+            # Branch to commit pull request to
+            results["branch"] = payload["pull_request"]["base"]["ref"]
+  
+            # Branch where commit pull request comes from
+            results["src_branch"] = payload["pull_request"]["head"]["ref"]
 
         results["event_type"] = event_type
 
