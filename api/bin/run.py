@@ -209,8 +209,8 @@ class WebhookProcess(object):
             dest_branch = pullrequest["destination"]["branch"]["name"]
             src_branch = pullrequest["source"]["branch"]["name"]
   
-            results["branch"] = dest_branch
-            results["src_branch"] = src_branch
+            results["dest_branch"] = dest_branch
+            results["branch"] = src_branch
 
             commit_hash = source_hash
             results["message"] = pullrequest["title"]
