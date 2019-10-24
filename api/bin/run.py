@@ -177,11 +177,17 @@ class WebhookProcess(object):
 
             commit_hash = commit_info["hash"]
             results["message"] = commit_info["message"]
-            results["author"] = commit_info["author"]["user"]["display_name"]
+
+            if commit_info.get("user"):
+                results["author"] = commit_info["author"]["user"]["display_name"]
+            else:
+                results["author"] = commit_info["author"]["raw"]
+
             results["authored_date"] = commit_info["date"]
             # add these fields to make it consistent with Github
-            results["committer"] = commit_info["author"]["user"]["display_name"]
-            results["committed_date"] = commit_info["date"]
+            results["committer"] = results["author"]
+            results["committed_date"] = results["authored_date"]
+
             results["url"] = commit_info["links"]["html"]["href"]
             results["repo_url"] = payload["repository"]["links"]["html"]["href"]
 
