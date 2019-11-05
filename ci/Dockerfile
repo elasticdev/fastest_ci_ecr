@@ -14,7 +14,8 @@ RUN /opt/install-edreporterhelper.sh
 RUN apt-get update && apt-get install wget apt-transport-https gnupg lsb-release apt-transport-https ca-certificates -y
 RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add - && \
     echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | tee -a /etc/apt/sources.list.d/trivy.list
-RUN apt-cache search trivy && apt-get install trivy -y
+RUN apt-cache search trivy 
+#RUN apt-cache search trivy && apt-get install trivy -y
 #RUN /opt/install_trivy_ubuntu.sh 
 COPY bin /opt/
 
