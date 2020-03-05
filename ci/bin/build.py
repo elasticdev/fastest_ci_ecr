@@ -418,7 +418,7 @@ class LocalDockerCI(object):
             inputargs["api_endpoint"] = api_endpoint
             inputargs["data"] = json.dumps(data)
 
-            print "sending results \n{} to \n{}".format(data,api_endpoint)
+            print "sending results \n{} to \n\n{}\n\n".format(data,api_endpoint)
 
             execute_http_post(**inputargs)
             sleep(1)
