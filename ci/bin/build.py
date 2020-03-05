@@ -420,10 +420,6 @@ class LocalDockerCI(object):
 
             #print "sending results \n{} to \n\n{}\n\n".format(data,api_endpoint)
             print "sending results to {}".format(api_endpoint)
-            print "sending results to {}".format(api_endpoint)
-            print "sending results to {}".format(api_endpoint)
-            print "sending results to {}".format(api_endpoint)
-            print "sending results to {}".format(api_endpoint)
 
             execute_http_post(**inputargs)
             sleep(1)
