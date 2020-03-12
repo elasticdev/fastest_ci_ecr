@@ -23,7 +23,7 @@ ipaddress==1.0.22
 ipython==3.0.0
 MarkupSafe==0.23
 meld3==0.6.10
-psutil==1.2.1
+psutil==5.6.6
 python-apt==1.1.0b1
 python-dateutil==2.6.0
 python-dotenv==0.10.3
