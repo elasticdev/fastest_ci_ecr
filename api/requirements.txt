@@ -17,7 +17,7 @@ Flask-RESTful==0.3.7
 Flask-WTF==0.14.2
 gunicorn==19.9.0
 html5lib==0.999
-httplib2==0.9.2
+httplib2==0.18.0
 idna==2.8
 ipaddress==1.0.22
 ipython==3.0.0
